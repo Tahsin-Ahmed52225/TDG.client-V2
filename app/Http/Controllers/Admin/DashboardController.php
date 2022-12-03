@@ -12,9 +12,14 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if($request->isMethod("GET")){
+            return view("Admin.dashboard");
+        }else{
+
+        }
+
     }
 
     /**

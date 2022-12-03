@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -43,7 +43,7 @@ class User extends Authenticatable
      */
     public function isManager()
     {
-        if ($this->role == 'employee' && $this->position == 'Manager') {
+        if ($this->role == 'manager' ) {
             return true;
         } else {
             return false;
@@ -51,23 +51,7 @@ class User extends Authenticatable
     }
     public function isEmployee()
     {
-        if ($this->role == 'employee' && $this->position != 'Manager') {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public function isAdmin()
-    {
-        if ($this->role == 'admin') {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public function isClient()
-    {
-        if ($this->role == 'client') {
+        if ($this->role == 'employee') {
             return true;
         } else {
             return false;

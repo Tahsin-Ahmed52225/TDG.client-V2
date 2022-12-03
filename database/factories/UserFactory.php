@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\User;
+use App\Models\User;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -16,13 +16,19 @@ use Illuminate\Support\Str;
 | model instances for testing / seeding your application's database.
 |
 */
-
 $factory->define(User::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'email_verified_at' => now(),
+        'phone' => $faker->numerify('###-###-####'),
+        'image' => null,
+        'position' => $faker->randomElement(['Designer', 'Developer','Manager']),
+        'role' => $faker->randomElement(['employee', 'manager']),
+        'email_verified' => $faker->randomElement([1,0]),
+        'verification_code' => null,
+        'stage' => $faker->randomElement([1,0]),
         'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+        'email_verified_at' => now(),
         'remember_token' => Str::random(10),
     ];
 });
