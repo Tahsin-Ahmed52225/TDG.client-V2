@@ -26,10 +26,10 @@ class CreateUsersTable extends Migration
             $table->string('image')
                   ->nullable()
                   ->comment("User image");
-            $table->string('position')
-                  ->comment("User position");
-            $table->string('role')
-                  ->comment("User role");
+            $table->unsignedBigInteger('position_id')
+                  ->comment("User position ID");
+            $table->unsignedBigInteger('role_id')
+                  ->comment("User role ID");
             $table->integer('email_verified')
                   ->default(0)
                   ->comment("( 0 - Not Verified | 1 - Verified");
@@ -43,6 +43,13 @@ class CreateUsersTable extends Migration
                   ->comment("User password");
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('role');
+            $table->foreign('position_id')
+                ->references('id')
+                ->on('position');
         });
     }
 

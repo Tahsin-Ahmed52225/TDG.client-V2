@@ -24,7 +24,7 @@ class LoginController extends Controller
             $data['password'] = $request->password;
             $validator = Validator::make($data, [
                 'email' => ['required', 'email', 'max:255'],
-                'password' => ['required', 'string', 'min:6'],
+                'password' => ['required', 'string'],
             ]);
             if ($validator->fails()) {
                 return redirect("/login")
@@ -38,7 +38,7 @@ class LoginController extends Controller
                     } else {
 
                             if (Auth::user()->stage == 1) {
-                                return redirect('/'.Auth::user()->role.'/dashboard');
+                                return redirect('/'.Auth::user()->role->slug.'/dashboard');
                             } else {
                                 Auth::logout();
                                 return redirect()->back()->with(session()->flash('alert-warning', 'Your account has been locked !'));

@@ -15,6 +15,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         if($request->isMethod("GET")){
+
             return view("Admin.dashboard");
         }else{
 

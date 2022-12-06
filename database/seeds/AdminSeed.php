@@ -17,12 +17,12 @@ class AdminSeed extends Seeder
             'email' => 'admin@tdg.com',
             'phone' => '1111111',
             'image' => null,
-            'position' => 'CEO',
-            'role' => 'admin',
+            'position_id' => 1,
+            'role_id' => 1,
             'email_verified' => 1,
             'verification_code' => null,
             'stage' => 1,
-            'password' => Hash::make('11223344'),
+            'password' => Hash::make('1122334455'),
         ]);
     }
 }

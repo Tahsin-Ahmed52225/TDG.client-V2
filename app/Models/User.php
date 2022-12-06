@@ -3,8 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
+# Custom models
+use App\Models\Role;
+use App\Models\Position;
 
 class User extends Authenticatable
 {
@@ -36,25 +41,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    /**
-     * Checking the user role
-     *
-     * @return bool
-     */
-    public function isManager()
+
+    public function role()
     {
-        if ($this->role == 'manager' ) {
-            return true;
-        } else {
-            return false;
-        }
+        return $this->belongsTo(Role::class);
     }
-    public function isEmployee()
+    public function position()
     {
-        if ($this->role == 'employee') {
-            return true;
-        } else {
-            return false;
-        }
+        return $this->belongsTo(Position::class);
     }
 }

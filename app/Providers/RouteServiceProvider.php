@@ -46,9 +46,9 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebRoutes();
 
-        Route::middleware('admin')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/admin.php'));
+        $this->mapAdminRoutes();
+
+        $this->mapSettingsRoutes();
     }
 
     /**
@@ -63,8 +63,6 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
-
-
     }
 
     /**
@@ -80,5 +78,33 @@ class RouteServiceProvider extends ServiceProvider
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path('routes/api.php'));
+    }
+     /**
+     * Define All Admin rotues
+     *
+     *
+     * @return void
+     */
+    protected function mapAdminRoutes()
+    {
+        Route::prefix('admin')
+            ->namespace($this->namespace)
+            ->middleware(['web','auth', 'admin'])
+            ->name('admin.')
+            ->group(base_path('routes/admin.php'));
+    }
+     /**
+     * Define All Settigs rotues
+     *
+     *
+     * @return void
+     */
+    protected function mapSettingsRoutes()
+    {
+        Route::prefix('settings')
+            ->namespace($this->namespace)
+            ->middleware(['web','auth'])
+            ->name('settings.')
+            ->group(base_path('routes/settings.php'));
     }
 }
