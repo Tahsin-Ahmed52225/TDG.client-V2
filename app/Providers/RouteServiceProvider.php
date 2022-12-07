@@ -107,4 +107,11 @@ class RouteServiceProvider extends ServiceProvider
             ->name('settings.')
             ->group(base_path('routes/settings.php'));
     }
+    protected function mapProjectRoutes(){
+        Route::prefix('project')
+            ->namespace($this->namespace)
+            ->middleware(['web','auth','has-permisson'])
+            ->name('project.')
+            ->group(base_path('routes/project.php'));
+    }
 }

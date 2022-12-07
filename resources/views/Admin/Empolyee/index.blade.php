@@ -37,7 +37,7 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Phone</th>
-                                    <th>Position</th>
+                                    <th>Role</th>
                                     <th>Stage</th>
                                     <th>Actions</th>
                                 </tr>
@@ -48,7 +48,7 @@
                                 @foreach ($users as $values)
                                     <tr id="row{{ $values->id }}">
 
-                                        <td style="padding: 17px 5px !important;">{{ $values->id }}</td>
+                                        <td style="padding: 17px 5px !important;">{{$loop->iteration}} </td>
                                         <td id="name{{ $values->id }}" style="padding: 17px 5px !important;"
                                             ondblclick="updateName({!! $values->id !!})">{{ $values->name }}</td>
                                         <td id="email{{ $values->id }}" style="padding: 17px 5px !important;"
@@ -59,16 +59,14 @@
 
                                             <div style="display:none;" id="position-edit{{ $values->id }}">
                                                 <select style="border:none" id="positionD{{ $values->id }}">
-                                                    <option>Manager</option>
-                                                    <option>Web developer</option>
-                                                    <option>Designer</option>
-                                                    <option>Content Writer</option>
-                                                    <option>Support</option>
+                                                    @foreach($roles as $role)
+                                                     <option value={{ $role->slug }}>{{ $role->title }}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                             <div id="position{{ $values->id }}"
                                                 ondblclick="updatePosition({!! $values->id !!})">
-                                                {{ $values->position }}
+                                                {{ $values->role->title }}
                                             </div>
 
 

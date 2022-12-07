@@ -23,7 +23,7 @@ class SystemController extends Controller
             $role = Role::find($id);
             if($role){
                 $role->delete();
-                return redirect()->back()->with(session()->flash('alert-success', 'Role Deleted !'));
+                return redirect()->back()->with(session()->flash('success', 'Role Deleted !'));
             }
         }
     }
@@ -31,14 +31,37 @@ class SystemController extends Controller
         $role = Role::find($id);
         return $role;
     }
-    public function roleEdit(Request $request, $id){
+    public function roleStore(Request $request){
         if($request->isMethod("POST")){
-            $role = Role::find($id);
             $data['title'] = $request->title;
             $data['slug'] = $request->slug;
             $validator = Validator::make($data, [
                 'slug' => ['required', 'string', 'max:255'],
-                'title' => ['required', 'string', 'max:255', 'unique:roles,title'],
+                'title' => ['required', 'string', 'max:255', 'unique:role,title'],
+            ]);
+            if ($validator->fails()) {
+                return redirect()
+                    ->back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }else{
+                Role::create([
+                    'title' =>  $data['title'],
+                    'slug' =>   $data['slug'],
+                ]);
+                return redirect()->back()->with(session()->flash('success', 'Role Added!'));
+            }
+        }
+
+    }
+    public function roleEdit(Request $request, $id){
+        if($request->isMethod("POST")){
+            $role = Role::find($id);
+            $data['title'] = $request->title_edit;
+            $data['slug'] = $request->slug_edit;
+            $validator = Validator::make($data, [
+                'slug' => ['required', 'string', 'max:255'],
+                'title' => ['required', 'string', 'max:255',],
             ]);
             if ($validator->fails()) {
                 return redirect()
@@ -49,10 +72,8 @@ class SystemController extends Controller
                 $role->title = $data['title'];
                 $role->slug = $data['slug'];
                 $role->save();
-                return redirect()->back()->with(session()->flash('alert-success', 'Role Updated !'));
-
+                return redirect()->back()->with(session()->flash('success', 'Role Updated !'));
             }
-
         }
     }
 

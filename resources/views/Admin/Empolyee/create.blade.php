@@ -13,8 +13,6 @@
                         <div class="alert alert-danger">
                             {{ $error }}
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-
-
                             @if ($errors->has('email'))
                             @endif
                         </div>
@@ -72,11 +70,9 @@
                                             <label for="exampleSelect1">Select designation <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-control" id="exampleSelect1" name="tdg_position">
-                                                <option value="Manager">Manager</option>
-                                                <option value="Web developer">Web Developer</option>
-                                                <option value="Desiger">Designer</option>
-                                                <option value="Content writer">Content Writer</option>
-                                                <option value="Support">Support</option>
+                                                @foreach ( $roles as $ele )
+                                                    <option value={{ $ele->slug}}> {{$ele->title}} </option>
+                                                @endforeach
                                             </select>
                                         </div>
 
