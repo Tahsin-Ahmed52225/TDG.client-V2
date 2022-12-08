@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 # Custom models
 use App\Models\Role;
 use App\Models\Position;
+use App\Models\Log;
 
 class User extends Authenticatable
 {
@@ -49,5 +50,9 @@ class User extends Authenticatable
     public function position()
     {
         return $this->belongsTo(Position::class);
+    }
+    public function log()
+    {
+        return $this->hasMany(Log::class);
     }
 }
