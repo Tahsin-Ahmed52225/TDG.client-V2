@@ -54,6 +54,13 @@
                                                 name="tdg_name" />
                                         </div>
                                         <div class="form-group col-md-6">
+                                            <label>Phone <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" placeholder="Enter phone"
+                                                name="tdg_phone" />
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-12">
                                             <label>Email address <span class="text-danger">*</span></label>
                                             <input type="email" class="form-control" placeholder="Enter email"
                                                 name="tdg_email" />
@@ -61,17 +68,22 @@
 
                                     </div>
                                     <div class="form-row">
+
                                         <div class="form-group col-md-6">
-                                            <label>Phone <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" placeholder="Enter phone"
-                                                name="tdg_phone" />
+                                            <label for="exampleSelect1">Select position <span
+                                                    class="text-danger">*</span></label>
+                                            <select class="form-control" id="exampleSelect1" name="tdg_position">
+                                                @foreach ( $positions as $ele )
+                                                    <option value={{ $ele->id }}> {{$ele->title}} </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="exampleSelect1">Select designation <span
                                                     class="text-danger">*</span></label>
-                                            <select class="form-control" id="exampleSelect1" name="tdg_position">
+                                            <select class="form-control" id="exampleSelect1" name="tdg_role">
                                                 @foreach ( $roles as $ele )
-                                                    <option value={{ $ele->slug}}> {{$ele->title}} </option>
+                                                    <option value={{ $ele->id }}> {{$ele->title}} </option>
                                                 @endforeach
                                             </select>
                                         </div>

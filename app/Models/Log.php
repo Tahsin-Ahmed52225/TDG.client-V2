@@ -12,7 +12,7 @@ class Log extends Model
     protected $table = "log";
     protected $fillable = ['log_details','user_id'];
 
-    public function User(){
+    public function user(){
         return $this->belongsTo(User::class);
     }
 }

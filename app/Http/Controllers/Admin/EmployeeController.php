@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helper\LogActivity;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\View;
 // Custom Model
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Position;
 
 class EmployeeController extends Controller
 {
@@ -24,9 +26,10 @@ class EmployeeController extends Controller
     {
         if ($request->isMethod("GET")) {
             $roles = Role::all();
+            $position = Position::all();
             $users = User::where('role_id','!=',1)->get();
             //dd($users);
-            return view('Admin\Empolyee\index', ['users' => $users , 'roles' =>$roles]);
+            return view('Admin\Empolyee\index', ['users' => $users , 'roles' =>$roles,'positions' =>$position]);
         } else {
             return redirect('/');
         }
@@ -41,18 +44,21 @@ class EmployeeController extends Controller
     {
         if ($request->isMethod("GET")) {
             $roles = Role::all();
-            return view('Admin\Empolyee\create', ['roles' => $roles]);
+            $position = Position::all();
+            return view('Admin\Empolyee\create', ['roles' => $roles,'positions' =>$position]);
         } else if ($request->isMethod("POST")) {
             $data['name'] = $request->tdg_name;
             $data['email'] = $request->tdg_email;
             $data['phone'] = $request->tdg_phone;
-            $data['role'] = $request->tdg_position;
+            $data['role'] = $request->tdg_role;
+            $data['position'] = $request->tdg_position;
             $data['password'] = $request->tdg_password;
             $validator = Validator::make($data, [
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email'],
                 'phone' => ['required', 'string', 'max:255'],
-                'position' => ['required', 'string', 'max:255'],
+                'role' => ['required'],
+                'position' => ['required'],
                 'password' => ['required', 'string', 'min:6'],
             ]);
             if ($validator->fails()) {
@@ -65,13 +71,14 @@ class EmployeeController extends Controller
                     'name' =>  $data['name'],
                     'email' =>   $data['email'],
                     'number' => $data['phone'],
-                    'position' => '-',
-                    'role' =>  $data['role'],
+                    'position_id' => $data['position'],
+                    'role_id' =>  $data['role'],
                     'verification_code' => $token,
                     'stage' => 1,
                     'password' => Hash::make($request->password),
                 ]);
                 if ($user != null) {
+                    LogActivity::addToLog("New Member Added");
                     return redirect()->back()->with(session()->flash('alert-success', 'Member Added !'));
                 } else {
                     return redirect()->back()->with(session()->flash('alert-danger', 'Something went wrong, Try Again !'));
@@ -129,6 +136,7 @@ class EmployeeController extends Controller
                             $user->save();
                             $msg = ucwords($request->option) . " updated successfully";
                             Session::flash('success', $msg);
+                            LogActivity::addToLog( $user->name." : ".$msg);
                             return View::make("Common/partials/flash_message");
                         } else {
                             Session::flash('error', "Something went wrong");
@@ -146,6 +154,7 @@ class EmployeeController extends Controller
                             $user->save();
                             $msg = ucwords($request->option) . " updated successfully";
                             Session::flash('success', $msg);
+                            LogActivity::addToLog( $user->name." : ".$msg);
                             return View::make("Common/partials/flash_message");
                         } else {
                             Session::flash('error', "Something went wrong");
@@ -162,6 +171,7 @@ class EmployeeController extends Controller
                         $user->save();
                         $msg = ucwords($request->option) . " updated successfully";
                         Session::flash('success', $msg);
+                        LogActivity::addToLog( $user->name." : ".$msg);
                         return View::make("Common/partials/flash_message");
                     } else {
                         Session::flash('error', "Something went wrong");

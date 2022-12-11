@@ -1,8 +1,7 @@
 <?php
 
 
-namespace App\Helpers;
-use Request;
+namespace App\Helper;
 use App\Models\Log;
 
 
@@ -15,7 +14,7 @@ class LogActivity
     public static function addToLog($message)
     {
     	$log = [];
-    	$log['Message'] = $message;
+    	$log['log_details'] = $message;
     	$log['user_id'] = auth()->user()->id;
     	Log::create($log);
     }

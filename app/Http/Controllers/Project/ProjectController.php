@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+# Custom Models
+use App\Models\Project;
+use App\Models\User;
+
 class ProjectController extends Controller
 {
     /**
@@ -22,9 +26,13 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        if($request->isMethod("GET")){
+            $employee = User::where('role_id','!=',1)->get();
+            $record = Project::take(3)->orderBy('due_date', 'desc')->get();
+            return view('project.create',['record' => $record,'employee' => $employee]);
+        }
     }
 
     /**
