@@ -8,14 +8,14 @@ class Project extends Model
 {
     protected $table = 'project';
     protected $fillable = [
-        'title', 'created_by', 'client_id','manager_id','due_date','status','priority','description','type','budget'
+        'title', 'created_by','due_date','status','priority','description','type',
     ];
 
     public function creator()
     {
         return $this->belongsTo(User::class);
     }
-    public function memebers(){
+    public function ProjectAssigns(){
         return $this->hasMany(ProjectAssigns::class, 'project_id');
     }
     public function subtasks(){
