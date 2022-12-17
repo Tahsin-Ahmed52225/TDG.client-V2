@@ -2,12 +2,9 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-
-use Faker\Generator as Faker;
-
-# Cutom Models
 use App\Models\Project;
 use App\Models\User;
+use Faker\Generator as Faker;
 
 $factory->define(Project::class, function (Faker $faker) {
     return[

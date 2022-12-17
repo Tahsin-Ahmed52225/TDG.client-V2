@@ -10,5 +10,6 @@ Route::match(['get', 'post'], '/view-member', 'Admin\EmployeeController@index')-
 Route::match(['get', 'post'], '/add-member', 'Admin\EmployeeController@create')->name('add_member');
 Route::get('/delete-member', 'Admin\EmployeeController@destroy')->name("deleteMember");
 Route::get('/update-member', 'Admin\EmployeeController@update')->name("updateMember");
+
 // Project Controll
 

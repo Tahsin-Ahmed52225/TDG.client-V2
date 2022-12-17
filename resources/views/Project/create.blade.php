@@ -73,7 +73,6 @@
                                             @foreach ( $employee as $ele )
                                                 <option value={{ $ele->id }}>{{ $ele->name }}</option>
                                             @endforeach
-
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
@@ -155,7 +154,7 @@
                             </div>
                             @foreach ( $record as $item)
 
-                            <a href="#">
+                            <a href="{{ route('project.show', $item->id) }}">
                                 <div class="card-body">
                                     <div class="card card-custom text-dark">
                                         <div class="card-header" >
@@ -200,7 +199,7 @@
                                                             </li>
                                                             <li class="navi-separator mb-3 opacity-70"></li>
                                                             <li class="navi-item">
-                                                                <a href="#" class="navi-link">
+                                                                <a href="{{ route('project.show', $item->id) }}" class="navi-link">
                                                                     <span class="navi-text">
                                                                         <span class="label label-xl label-inline label-light-primary">View Project</span>
                                                                     </span>

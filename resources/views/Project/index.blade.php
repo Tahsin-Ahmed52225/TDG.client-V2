@@ -12,9 +12,18 @@
     <div class="d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class="container">
-            <div class="card card-custom" id="error_holder">
+            <div class="card card-custom">
                 <div class="card-body">
+                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                            @if(Session::has('alert-' . $msg))
+                                @if($msg == 'success')
+                                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }}  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
 
+                                @else
+                                <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+                                @endif
+                            @endif
+                    @endforeach
                     <!--begin: Datatable-->
                    <table  class="table table-bordered table-hover table-checkable text-left "  id="myTable" >
                         <thead>
@@ -77,9 +86,9 @@
 
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-primary">
+                                                    <a href="{{ route('project.show', $values->id) }}" class="btn btn-sm btn-primary">
                                                         <i class="fa fa-eye"></i>
-                                                    </button>
+                                                    </a>
                                                     <button data-id={{ $values->id }} class="btn btn-sm btn-danger delete_btn" data-toggle="modal" data-target="#delete_modal">
                                                         <i data-id={{ $values->id }} class="fa fa-trash"></i>
                                                     </button>

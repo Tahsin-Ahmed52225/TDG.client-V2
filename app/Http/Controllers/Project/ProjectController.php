@@ -113,8 +113,15 @@ class ProjectController extends Controller
     public function show($id)
     {
         $project = Project::find($id);
+        $user = User::where('role_id','!=','1')->get(['id','name'])->toArray();
+        $userAssigned = ProjectAssigns::where('project_id',$project->id)
+                        ->join('users', 'users.id', '=', 'project_user_assign.user_id')
+                        ->get(['users.id', 'users.name'])
+                        ->toArray();
+        $notAssignUser = array_diff(array_map('serialize',$user), array_map('serialize',$userAssigned));
+        $notAssignUser = array_map('unserialize',$notAssignUser);
         if($project){
-            return view('project.single', ['project' => $project]);
+            return view('project.single', ['project' => $project, 'notAssignUser' => $notAssignUser]);
         }else{
             return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
         }
@@ -126,10 +133,23 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request , $id)
     {
-        //
+        $project = Project::find($id);
+        if($project){
+            $project->due_date = $request->tdg_project_date;
+            $project->status = $request->tdg_project_status;
+            $project->priority = $request->tdg_project_priority;
+            $project->type = $request->tdg_project_type;
+            $project->budget = $request->tdg_project_budget;
+            $project->save();
+            return redirect()->back()->with(session()->flash('alert-success', 'Project info updated successfully!'));
+        }else{
+            return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong!'));
+        }
+
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -141,6 +161,67 @@ class ProjectController extends Controller
     public function update(Request $request, $id)
     {
         //
+    }
+     /** AJAX request
+     * updating project Name
+     * @param Request
+     * @return json::success_status
+     *
+     */
+    public function updateTitle(Request $request)
+    {
+        if ($request->ajax()) {
+            $project = Project::find($request->project_id);
+            if ($project) {
+                $project->project_name = $request->project_name;
+                $project->save();
+                return response()->json(["success" => true]);
+            } else {
+                return response()->json(["success" => false]);
+            }
+        }
+    }
+    /** AJAX request
+     * updating project description
+     * @param Request
+     * @return json::success_status
+     *
+     */
+
+    public function updateDescription(Request $request)
+    {
+        if ($request->ajax()) {
+            $project = Project::find($request->project_id);
+            if ($project) {
+                $project->description = $request->project_description;
+                $project->save();
+                return response()->json(["success" => true]);
+            } else {
+                return response()->json(["success" => false]);
+            }
+        }
+    }
+
+    public function updateMember(Request $request , $project_id){
+        $project = Project::find($project_id);
+        $data["member_list"] = $request->tdg_assignee_member;
+        $validator = Validator::make($data, [
+            'member_list' => ['required'],
+        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->with(session()->flash('alert-warning', 'Memeber field is required.'));
+        }else{
+            foreach($data['member_list'] as $member){
+                ProjectAssigns::create([
+                    'project_id' => $project_id,
+                    'user_id' => $member,
+                ]);
+            }
+            LogActivity::addToLog( count(($data['member_list']))." member added to".$project->title);
+            return redirect()->back()->with(session()->flash('alert-success', 'Memeber added successfully.'));
+
+        }
+
     }
 
     /**
