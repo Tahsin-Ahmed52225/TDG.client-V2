@@ -18,7 +18,12 @@ Route::get('/project-assign-by-userID', 'Project\SingleProjectController@getProj
 Route::get('/remove-member/{id}', 'Project\SingleProjectController@removeMember')->name("remove_member");
 Route::get('/remove-manager/{id}', 'Project\SingleProjectController@removeManager')->name("remove_manager");
 Route::get('/assign-manager/{user_id}/{project_id}', 'Project\SingleProjectController@assignManager')->name("assign_manager");
+
+
 Route::post('/add-file/{project_id}', 'Project\SingleProjectController@addFile')->name("add_file");
+Route::get('/get-file/{file_id}', 'Project\SingleProjectController@getFile')->name("get_file");
+Route::post('/delete-file/{file_id}', 'Project\SingleProjectController@deleteFile')->name("delete_file");
+Route::post('/edit-file/{file_id}', 'Project\SingleProjectController@editFile')->name("edit_file");
 // Route::match(['get', 'post'], '/view-projects', 'Project\ProjectController@index')->name('view');
 // Route::match(['get', 'post'], '/add-project', 'Project\ProjectController@create')->name('add');
 

@@ -11,6 +11,7 @@ use App\Helper\LogActivity;
 # Custom Models
 use App\Models\Project;
 use App\Models\ProjectAssigns;
+use App\Models\ProjectFiles;
 use App\Models\User;
 
 class ProjectController extends Controller
@@ -113,6 +114,7 @@ class ProjectController extends Controller
     public function show($id)
     {
         $project = Project::find($id);
+        # Project member data
         $user = User::where('role_id','!=','1')->get(['id','name'])->toArray();
         $userAssigned = ProjectAssigns::where('project_id',$project->id)
                         ->join('users', 'users.id', '=', 'project_user_assign.user_id')
@@ -120,8 +122,10 @@ class ProjectController extends Controller
                         ->toArray();
         $notAssignUser = array_diff(array_map('serialize',$user), array_map('serialize',$userAssigned));
         $notAssignUser = array_map('unserialize',$notAssignUser);
+        # Project file data
+        $files = ProjectFiles::where('project_id',$project->id)->get();
         if($project){
-            return view('project.single', ['project' => $project, 'notAssignUser' => $notAssignUser]);
+            return view('project.single', ['project' => $project, 'notAssignUser' => $notAssignUser , 'files' => $files]);
         }else{
             return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
         }

@@ -64,4 +64,7 @@ class User extends Authenticatable
     public function subtasks(){
         return $this->hasMany(ProjectSubtaskAssigns::class);
     }
+    public function files(){
+        return $this->hasMany(ProjectFiles::class, 'user_id');
+    }
 }

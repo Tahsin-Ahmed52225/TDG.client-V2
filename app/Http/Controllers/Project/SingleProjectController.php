@@ -177,8 +177,7 @@ class SingleProjectController extends Controller
     public function addFile(Request $request ,$id){
         $data["file_description"] = $request->file_description;
         $data["file"] = $request->file("project_file");
-        $fileName = $data["file"]->getClientOriginalName();
-        $data["file"]->move("files/project".$id, $fileName);
+
 
         $validator = Validator::make($data, [
             'file_description' => ['required'],
@@ -187,13 +186,60 @@ class SingleProjectController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
         }else{
+            $fileName = $data["file"]->getClientOriginalName();
+            $data["file"]->move("files/project".$id, $fileName);
             $new_file = ProjectFiles::create([
                 'description' => $data["file_description"],
                 'file_path' => $fileName,
                 'project_id'=> $id,
                 'user_id'=> Auth::user()->id,
             ]);
+            $project = Project::find($id);
+            LogActivity::addToLog($new_file->file_path." added to project: ".$project->title);
             return redirect()->back()->with(session()->flash('alert-success', 'Project file added successfully!'));
+        }
+    }
+
+    public function getFile(Request $request, $id){
+        if($request->ajax()){
+            $project_file = ProjectFiles::find($id);
+            if($project_file){
+                return response()->json($project_file->toArray());
+            }else{
+                return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
+            }
+        }
+    }
+
+    public function editFile(Request $request , $id){
+        $projecFile = ProjectFiles::find($id);
+        if($projecFile){
+            $projecFile->description = $request->file_description_edit;
+            if($request->file("project_file_edit")){
+                $file = $request->file("project_file_edit");
+                $fileName =  $file->getClientOriginalName();
+                $file->move("files/project".$id, $fileName);
+                $projecFile->file_path = $fileName;
+            }
+            $projecFile->save();
+            return redirect()->back()->with(session()->flash('alert-success', 'Project file updated successfully!'));
+        }else{
+            return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
+        }
+    }
+
+    public function deleteFile(Request $request , $file_id){
+        if($request->isMethod('POST')){
+            $file = ProjectFiles::find($file_id);
+            if($file){
+                LogActivity::addToLog($file->file_path." deleted from project: ".$file->project->title);
+                $file->delete();
+                return redirect()->back()->with(session()->flash('alert-success', 'Project file deleted successfully!'));
+            }else{
+                return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
+            }
+        }else{
+            return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
         }
     }
 }

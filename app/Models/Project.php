@@ -21,4 +21,7 @@ class Project extends Model
     public function subtasks(){
         return $this->hasMany(ProjectSubtask::class, 'project_id');
     }
+    public function files(){
+        return $this->hasMany(ProjectFiles::class, 'project_id');
+    }
 }

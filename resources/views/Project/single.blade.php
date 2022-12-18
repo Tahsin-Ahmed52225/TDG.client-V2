@@ -5,6 +5,7 @@
  <link rel="stylesheet" href="{{ asset('dev-assets/css/single_project.css') }}">
  <link rel="stylesheet" href="{{ asset('dev-assets/css/tooltip.css') }}">
  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+ <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
  <meta name="csrf-token" content="{{ csrf_token() }}">
 
  <style>
@@ -86,6 +87,7 @@
  <script src="{{ asset('dev-assets/js/project/update_project_info.js') }}"></script>
  <script src="{{ asset('dev-assets/js/project/count_down_timer.js') }}"></script>
  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+ <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
  <script>
     $('.js-example-basic-multiple').select2();
 </script>
@@ -141,6 +143,61 @@
     });
 
     })
+
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#kt_datatable').DataTable();
+    });
+</script>
+
+<script>
+    $(window).on('load',function() {
+    //Delete project file
+    $('.delete-btn').on("click",(e)=>{
+       var file_id = $(e.target).attr('data-id');
+       var url = `../delete-file/`+file_id;
+       console.log(url)
+       $('#delete').attr('action', url);
+    });
+    //Edit project file
+    $('.edit-btn').on("click",(e)=>{
+        var file_id = $(e.target).attr('data-id');
+        $.ajax({
+            url: `../get-file/`+file_id,
+            type: "GET",
+            success: function (data) {
+                console.log(data);
+                $('#file_description_edit').text(data.description);
+                $('#show_file_name').text(data.file_path);
+                $('#edit_form').attr('action',`../edit-file/`+file_id)
+            },
+            error: function (xhr, exception) {
+                var msg = "";
+                if (xhr.status === 0) {
+                    msg = "Not connect.\n Verify Network." + xhr.responseText;
+                } else if (xhr.status == 404) {
+                    msg = "Requested page not found. [404]" + xhr.responseText;
+                } else if (xhr.status == 500) {
+                    msg = "Internal Server Error [500]." +  xhr.responseText;
+                } else if (exception === "parsererror") {
+                    msg = "Requested JSON parse failed.";
+                } else if (exception === "timeout") {
+                    msg = "Time out error." + xhr.responseText;
+                } else if (exception === "abort") {
+                    msg = "Ajax request aborted.";
+                } else {
+                    msg = "Error:" + xhr.status + " " + xhr.responseText;
+                }
+
+            }
+        });
+        $('.save_edit').on('click',()=>{
+            $("#edit_form").trigger("submit");
+        })
+     });
+});
 
 </script>
 
