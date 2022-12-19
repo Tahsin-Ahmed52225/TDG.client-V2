@@ -12,6 +12,7 @@ use App\Helper\LogActivity;
 use App\Models\Project;
 use App\Models\ProjectAssigns;
 use App\Models\ProjectFiles;
+use App\Models\ProjectSubtask;
 use App\Models\User;
 
 class ProjectController extends Controller
@@ -95,7 +96,7 @@ class ProjectController extends Controller
                             'user_id' => $member,
                         ]);
                     }
-                    LogActivity::addToLog("Project added");
+                    LogActivity::addToLog("Project added: '".$record->title."'");
                     return redirect()->back()->with(session()->flash('alert-success', 'Project added successfully! '));
                 }else{
                     return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
@@ -114,6 +115,9 @@ class ProjectController extends Controller
     public function show($id)
     {
         $project = Project::find($id);
+        #tasks
+        $tasks = ProjectSubtask::where("project_id", $project->id)->orderBy('created_at', 'DESC')->get();
+        $completedTask = count(ProjectSubtask::where("project_id", $project->id)->where('complete',1)->get());
         # Project member data
         $user = User::where('role_id','!=','1')->get(['id','name'])->toArray();
         $userAssigned = ProjectAssigns::where('project_id',$project->id)
@@ -125,7 +129,7 @@ class ProjectController extends Controller
         # Project file data
         $files = ProjectFiles::where('project_id',$project->id)->get();
         if($project){
-            return view('project.single', ['project' => $project, 'notAssignUser' => $notAssignUser , 'files' => $files]);
+            return view('project.single', ['project' => $project, 'notAssignUser' => $notAssignUser , 'files' => $files ,'userAssigned' => $userAssigned , 'tasks' => $tasks , 'completedTask' => $completedTask]);
         }else{
             return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
         }
@@ -177,7 +181,8 @@ class ProjectController extends Controller
         if ($request->ajax()) {
             $project = Project::find($request->project_id);
             if ($project) {
-                $project->project_name = $request->project_name;
+                LogActivity::addToLog("Project Title- '".$project->title."' changed to '".$request->project_name."'");
+                $project->title = $request->project_name;
                 $project->save();
                 return response()->json(["success" => true]);
             } else {
@@ -197,6 +202,7 @@ class ProjectController extends Controller
         if ($request->ajax()) {
             $project = Project::find($request->project_id);
             if ($project) {
+                LogActivity::addToLog( "'".$project->title."' description updated");
                 $project->description = $request->project_description;
                 $project->save();
                 return response()->json(["success" => true]);
@@ -221,7 +227,7 @@ class ProjectController extends Controller
                     'user_id' => $member,
                 ]);
             }
-            LogActivity::addToLog( count(($data['member_list']))." member added to".$project->title);
+            LogActivity::addToLog( count(($data['member_list']))." member added to '".$project->title."'");
             return redirect()->back()->with(session()->flash('alert-success', 'Memeber added successfully.'));
 
         }

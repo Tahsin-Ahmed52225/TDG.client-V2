@@ -6,89 +6,18 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Helper\LogActivity;
+use App\Helper\ProjectHelp;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\ProjectFiles;
 use Illuminate\Http\Request;
 use App\Models\ProjectAssigns;
+use App\Models\ProjectSubtask;
+use App\Models\ProjectSubtaskAssigns;
 
 class SingleProjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
     public function getProjectAssignDetails(Request $request){
         if($request->ajax()){
             $assign_data = ProjectAssigns::where('id',$request->id)
@@ -152,14 +81,25 @@ class SingleProjectController extends Controller
        if($data){
             $project = Project::find($data->project_id);
             $user = User::find($data->user_id);
-            LogActivity::addToLog($user->name." has been removed from : ".$project->title);
+            LogActivity::addToLog("'".$user->name."' has been removed from : '".$project->title."'");
             $data->delete();
             return redirect()->back()->with(session()->flash('alert-success', 'Project member removed successfully'));
        }
 
     }
-    public function removeManager($id){
-        dd($id);
+    public function removeManager(Request $request,$id){
+        if($request->isMethod("GET")){
+            $project = Project::find($id);
+            if($project){
+                $project->manager_id = null;
+                $project->save();
+                return redirect()->back()->with(session()->flash('alert-success', 'Project manager removed'));
+            }else{
+                return redirect()->back()->with(session()->flash('alert-warning', 'Project not found'));
+            }
+        }else{
+            return redirect()->back()->with(session()->flash('alert-warning', 'Method not allowed'));
+        }
     }
     public function assignManager($user_id, $project_id){
       $project = Project::find($project_id);
@@ -167,7 +107,7 @@ class SingleProjectController extends Controller
         $project->manager_id = $user_id;
         $user = User::find($user_id);
         $project->save();
-        LogActivity::addToLog($project->title." project manager assigned to : ".$user->name);
+        LogActivity::addToLog("'".$project->title."' project manager assigned to : '".$user->name."'");
         return redirect()->back()->with(session()->flash('alert-success', 'Project manager assigned'));
       }else{
         return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
@@ -195,7 +135,7 @@ class SingleProjectController extends Controller
                 'user_id'=> Auth::user()->id,
             ]);
             $project = Project::find($id);
-            LogActivity::addToLog($new_file->file_path." added to project: ".$project->title);
+            LogActivity::addToLog("'".$new_file->file_path."' added to project: '".$project->title."'");
             return redirect()->back()->with(session()->flash('alert-success', 'Project file added successfully!'));
         }
     }
@@ -241,5 +181,71 @@ class SingleProjectController extends Controller
         }else{
             return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
         }
+    }
+    public function createSubtask(Request $request , $id){
+        if($request->isMethod('POST')){
+            $data['title'] = $request->title;
+            $data['description'] = $request->description;
+            $data['priority'] = $request->priority;
+            $data['due_date'] = $request->due_date;
+            $data['assigned_member'] = $request->assignee_member;
+
+            $validator = Validator::make($data, [
+                'title' => ['required', 'string', 'max:255'],
+                'description' => ['required'],
+                'assigned_member' => ['required'],
+                'priority' => ['string', 'max:255'],
+                'due_date' => ['required','date'],
+            ]);
+            if ($validator->fails()) {
+                return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput();
+            }else{
+                $subtask = ProjectSubtask::create([
+                    'title' => $data['title'],
+                    'description' => $data['description'],
+                    'priority' => $data['priority'],
+                    'due_date' => $data['due_date'],
+                    'project_id' => $id
+                ]);
+                if($subtask){
+                    foreach($data['assigned_member'] as $member){
+                        ProjectSubtaskAssigns::create([
+                            'project_subtask_id' => $subtask->id,
+                            'user_id' => $member,
+                        ]);
+                    }
+                    $project = Project::find($id);
+                    LogActivity::addToLog("Task added to project: '".$project->title."'");
+                    return redirect()->back()->with(session()->flash('alert-success', 'Subtask added successfully.'));
+                }else{
+                    return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
+                }
+
+
+            }
+        }else{
+            return redirect()->back()->with(session()->flash('alert-warning', 'Method not allowed'));
+        }
+    }
+    public function taskCompleteToggle(Request $request){
+        if($request->ajax()){
+            $task = ProjectSubtask::find($request->task_id);
+
+            if($task){
+                $task->complete = ($task->complete === 0) ? 1 : 0;
+                $task->save();
+                $stage = ($task->complete === 1) ? 'complete' : 'incomplete';
+                LogActivity::addToLog( "'".$task->title."' marked : ".$stage);
+                return response()->json(['data' => $task->complete]);
+            }else{
+                return response()->json(['data' => 'not found']);
+            }
+        }else{
+            return response()->json(['data' => 'error']);
+        }
+
     }
 }

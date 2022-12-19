@@ -55,7 +55,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="tdg_project_description" class="card-body"
+                                    <div id="tdg_project_description" class="card-body mb-2"
                                         data-ivalue="{{ $project->id }}">
                                         {{ $project->description }}
                                     </div>
@@ -120,13 +120,25 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
+                                            <div class="card mb-6">
+                                                <div class="card-body">
+                                                    <h3 class="card-title font-weight-bolder text-dark">Project Progress : </h3>
+                                                    <div class="progress">
+                                                        <div class="progress-bar progress-bar-striped progress-bar-animated {{ ($completedTask === count($tasks)) ? "bg-success":"" }} " role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{ ($completedTask/count($tasks))*100 }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
                                             <!--begin::List Widget 4-->
                                             <div class="card card-custom card-stretch gutter-b">
                                                 <!--begin::Header-->
                                                 <div class="card-header border-0">
                                                     <h3 class="card-title font-weight-bolder text-dark">
                                                         Tasks</h3>
-                                                    <div class="card-toolbar" id="create_task">
+                                                    <div class="card-toolbar" data-toggle="modal" data-target="#addSubtaskmodal">
                                                         <a href="#"
                                                             class="btn btn-light btn-sm font-size-sm font-weight-bolder  text-dark-75">
                                                             <i class="fas fa-plus"></i> Create</a>
@@ -135,81 +147,57 @@
                                                 <!--end::Header-->
                                                 <!--begin::Body-->
                                                 <div class="card-body" id="task_board">
-                                                    {{-- @if ($tasks) --}}
-                                                        @php
-                                                            $i = 0;
-                                                        @endphp
-                                                        {{-- @foreach ($tasks as $items) --}}
-                                                            {{-- <div class="d-flex align-items-center mt-3"
-                                                                id="task{{ $items->id }}">
-                                                                <!--begin::Bullet-->
-                                                                <span
-                                                                    class="bullet bullet-bar bg-success align-self-stretch"></span>
-                                                                <!--end::Bullet-->
-                                                                <!--begin::Checkbox-->
-                                                                <label
-                                                                    class="checkbox checkbox-lg checkbox-light-success checkbox-inline flex-shrink-0 m-0 mx-4">
-                                                                    <input type="checkbox" name="select"
-                                                                        data-id={{ $items->id }}
-                                                                        class="task_checkbox"
-                                                                        {{ $items->complete == 1 ? 'checked' : '' }}>
-                                                                    <span></span>
-                                                                </label>
-                                                                <!--end::Checkbox-->
-                                                                <!--begin::Text-->
-                                                                <div class="d-flex flex-column flex-grow-1"
-                                                                    data-toggle="modal"
-                                                                    data-target="#subtask_details"
-                                                                    style="cursor: pointer;"
-                                                                    onclick="getSubTaskDetails({{ $items->id }})">
-                                                                    <div class="text-dark-75 text-hover-primary font-weight-bold font-size-lg mb-1 sub_task_title"
-                                                                        id="taskname{{ $items->id }}"
-                                                                        data-id={{ $items->id }}
-                                                                        style="margin-top:4px; height:20px;
-                                                                                                @if ($items->complete == 1) text-decoration: line-through; @endif">
-                                                                        {{ $items->Name }}
-                                                                    </div>
-                                                                </div>
-                                                                <!--end::Text-->
-                                                                <!--begin::Dropdown-->
-                                                                <div class="dropdown dropdown-inline ml-2">
-                                                                    <a href="#"
-                                                                        class="btn btn-hover-light-primary btn-sm btn-icon"
-                                                                        data-toggle="dropdown"
-                                                                        aria-haspopup="true"
-                                                                        aria-expanded="false">
-                                                                        <i class="ki ki-bold-more-hor"></i>
-                                                                    </a>
-                                                                    <div
-                                                                        class="dropdown-menu p-0 m-0 dropdown-menu-md dropdown-menu-right">
-                                                                        <!--begin::Navigation-->
-                                                                        <ul class="navi navi-hover">
-                                                                            <li
-                                                                                class="navi-item bg-light-danger rounded">
-                                                                                <a class="sub_task_delete navi-link"
-                                                                                    data-id={{ $items->id }}>
-                                                                                    <span
-                                                                                        class="navi-text">
-                                                                                        Delete Task
-                                                                                    </span>
-                                                                                </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                        <!--end::Navigation-->
-                                                                    </div>
-                                                                </div>
+                                                    <table class="table table-striped" id="kt_datatable2">
+                                                        <thead>
+                                                                <th>
+                                                                    #
+                                                                </th>
+                                                                <th>
+                                                                   Task Title
+                                                                </th>
+                                                                <th>
+                                                                    Assigned
+                                                                </th>
+                                                                <th>
+                                                                    Due Date
+                                                                </th>
+                                                                <th>
+                                                                    Action
+                                                                </th>
+                                                        </thead>
+                                                        <tbody>
 
-                                                            </div> --}}
-                                                            {{-- sub task details starts --}}
-                                                            <!-- Button trigger modal -->
-                                                            <!-- Modal -->
+                                                            @foreach ( $tasks as $value )
+                                                            <tr>
+                                                                <td>
+                                                                    <input class='task_checkbox' data-id="{{ $value->id }}" type="checkbox" {{ ($value->complete != 0 ) ? "checked" : ""}}>
+                                                                </td>
+                                                                <td class="project-title" style="text-decoration: {{ ($value->complete == 0 ) ? "" : "line-through"}} ">
+                                                                    {{ $value->title }}
+                                                                </td>
+                                                                <td>
+                                                                    @foreach($value->members as $member)
+                                                                        <span class="tool" data-tip="{{ $member->user->name }} | {{ $member->user->position->title }}">
+                                                                            <i style="font-size: 25px;" class="far fa-user-circle"></i>
+                                                                        </span>
+                                                                    @endforeach
 
-                                                            {{-- sub task details ends --}}
-                                                            @php
-                                                                $i++;
-                                                            @endphp
-                                                        {{-- @endforeach --}}
-                                                    {{-- @endif --}}
+                                                                </td>
+                                                                <td>
+                                                                    {{ \Carbon\Carbon::parse($value->due_date)->format('d/m/Y')}}
+                                                                </td>
+                                                                <td>
+                                                                <button data-id={{ $value->id }} class="btn edit-btn" style="border:1px solid rgb(219, 219, 219); padding-right: .5rem;" data-toggle="modal" data-target="#editProjectFileModel">
+                                                                        <i data-id={{ $value->id }} class="fas fa-edit text-info"></i>
+                                                                </button>
+                                                                <button data-id={{ $value->id }} data-page="hello" data-toggle="modal" data-target="#deleteProjectFile" class="btn delete-btn" style="border:1px solid rgb(219, 219, 219)">
+                                                                        <i data-id={{ $value->id }} class="fas fa-trash-alt text-danger"></i>
+                                                                </button>
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        </tody>
+                                                    </table>
                                                 </div>
                                                 <!--end::Body-->
 
@@ -221,5 +209,6 @@
                                 </div>
 </div>
 @include("Project.partials.settings")
+@include("Project.modal.project_add_subtask")
 {{-- @include("admin.project.modal.subtask_modal") --}}
 

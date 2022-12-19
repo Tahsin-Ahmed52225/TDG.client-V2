@@ -1,11 +1,34 @@
-    var id = $("#tdg_project_name").data("ivalue");
-    var alltask = [];
-    //Adding new subtask on create button click
 
-    //Updating subtask status on checkbox click
-    $("#task_board").on('change', '.task_checkbox', function (e) {
-        // console.log($(e.target).data("id"));
-        changeStage($(e.target).data("id"));
+    // Toggle task complete value
+    function taskCompleteToggler(e) {
+        $.ajax({
+            type: 'GET',
+            url: '../task-complete-toggle',
+            data: {
+                task_id: $(e.target).attr('data-id'),
+            },
+            success: function (data) {
+                if(data.data === 0 || data.data === 1){
+                    $(e.target).parent().siblings('.project-title').css('text-decoration', data.data == 1 ? 'line-through' : 'none');
+                  //  console.log($('.progress-bar').css('width'));
+                    var f = $('.progress-bar').width() / $('.progress-bar').parent().width() * 100
+                    console.log(f);
+                    toastr.success((data.data == 1)? "Task Complete": "Task mark imcomplete");
+                }else if(data.data == "not found"){
+                    toastr.success("Task not found");
+                }else{
+                    toastr.success("Method not allowed");
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+            },
+        });
+
+    }
+   // Task checkbox event
+    $(".task_checkbox").on('change', (e)=> {
+        taskCompleteToggler(e);
     });
     //Updating subtask on double click
     $("#task_board").on('dblclick', '.modal-title', function (e) {
@@ -66,24 +89,7 @@
             },
         });
     });
-    function changeStage(id) {
-        $.ajax({
-            type: 'GET',
-            url: '../update_subtask_status',
-            data: {
-                subtask_id: id,
-            },
-            success: function (data) {
-                $('.toast').toast("show");
-                $('.toast-body').text("Project Subtask Status Changed");
-                $('#taskname' + id).css('text-decoration', data == 1 ? 'line-through' : 'none');
-            },
-            error: function (xhr) {
-                console.log(xhr.responseText);
-            },
-        });
 
-    }
     //Delete Subtask
     function deleteSubtask(id) {
         $.ajax({

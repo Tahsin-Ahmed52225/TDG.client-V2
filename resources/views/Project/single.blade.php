@@ -22,6 +22,18 @@
     <div class="d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class="container">
+            @if ($errors->any())
+                                @foreach ($errors->all() as $error)
+                                    <div class="alert alert-danger">
+                                        {{ $error }}
+                                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+
+
+                                    @if ($errors->has('email'))
+                                    @endif
+                                    </div>
+                                @endforeach
+            @endif
             @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                     @if(Session::has('alert-' . $msg))
                         @if($msg == 'success')
@@ -86,6 +98,7 @@
  @section('scripts')
  <script src="{{ asset('dev-assets/js/project/update_project_info.js') }}"></script>
  <script src="{{ asset('dev-assets/js/project/count_down_timer.js') }}"></script>
+ <script src="{{ asset('dev-assets/js/project/subtask.js') }}"></script>
  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
  <script>
@@ -149,6 +162,9 @@
 <script>
     $(document).ready(function() {
         $('#kt_datatable').DataTable();
+        $('#kt_datatable2').DataTable({
+            "bPaginate": false
+        });
     });
 </script>
 
@@ -198,7 +214,11 @@
         })
      });
 });
-
+</script>
+<script>
+    $("#submitForm").on("click",()=>{
+        $("#addsubtask").trigger("submit");
+    });
 </script>
 
  @endsection

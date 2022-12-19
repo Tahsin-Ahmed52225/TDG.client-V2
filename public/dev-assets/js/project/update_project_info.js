@@ -1,52 +1,40 @@
-//Updateing project name ( ajax call )
-function updateProjectName(project_id, project_name) {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        type: "POST",
-        url: "../update-project-name",
-        data: {
-            project_id: project_id,
-            project_name: project_name,
-        },
-        success: function (data) {
-            console.log(data.success);
-        }
-    });
 
-}
 //Updateing project description ( ajax call )
 function updateProjectDescription(project_id, project_description) {
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        type: "POST",
-        url: "../update-project-description",
-        data: {
-            project_id: project_id,
-            project_description: project_description,
-        },
-        success: function (data) {
-            console.log(data.success);
-        }
-    });
+
 
 }
 
 // Double click on project name to update project name
 $("#tdg_project_name").on("dblclick", function () {
     $(this).prop("contenteditable", true);
+    $('#tdg_project_name').css("width", '600px');
     $(this).focus();
     $(this).on("keypress", function (event) {
         if (event.key === 'Enter') {
             event.preventDefault();
             if ($(this).text() === "") {
-                // $(this).text("P");
+                toastr.error("Project Title cann't be empty");
             } else {
                 $(this).prop("contenteditable", false);
-                updateProjectName($(this).data("ivalue"), $(this).text());
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: "POST",
+                        url: "../update-title",
+                        data: {
+                            project_id: $(this).data("ivalue"),
+                            project_name: $(this).text(),
+                        },
+                        success: function (data) {
+                            if(data.success) {
+                                toastr.success("Project title updated successfully");
+                            }else{
+                                toastr.warning("Something went wrong, please try again");
+                            }
+                        }
+                    });
 
             }
 
@@ -63,10 +51,29 @@ $("#tdg_project_description").on("dblclick", function () {
         if (event.key === 'Enter') {
             event.preventDefault();
             if ($(this).text() === "") {
-
+                toastr.error("Description cannot be empty");
             } else {
                 $(this).prop("contenteditable", false);
-                updateProjectDescription($(this).data("ivalue"), $(this).text());
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    type: "POST",
+                    url: "../update-description",
+                    data: {
+                        project_id: $(this).data("ivalue"),
+                        project_description: $(this).text(),
+                    },
+                    success: function (data) {
+
+                        if(data.success) {
+
+                            toastr.success("Project decription updated successfully");
+                        }else{
+                            toastr.warning("Something went wrong, please try again");
+                        }
+                    }
+                });
             }
         }
     });

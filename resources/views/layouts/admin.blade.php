@@ -459,7 +459,7 @@
         <div class="offcanvas-header offcanvas-header-navs d-flex align-items-center justify-content-between mb-5">
             <ul class="nav nav-bold nav-tabs nav-tabs-line nav-tabs-line-3x nav-tabs-primary flex-grow-1 px-10" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#kt_quick_panel_notifications">Notifications</a>
+                    <a class="nav-link active" data-toggle="tab" href="#kt_quick_panel_notifications">System Logs</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#kt_quick_panel_settings">Settings</a>
@@ -477,20 +477,21 @@
             <div class="tab-content">
 
                 <!--begin::Tabpane-->
-                <div class="tab-pane fade show active pt-2 pr-5 mr-n5" id="kt_quick_panel_notifications" role="tabpanel">
+                <div class="tab-pane fade show active pr-5 mr-n5" id="kt_quick_panel_notifications" role="tabpanel">
                     <!--begin::Nav-->
                     <div class="navi navi-icon-circle navi-spacer-x-0">
                         <!--begin::Item-->
+                        <div class="bg-white" style="position: sticky; top:0px; padding:10px">
+                            <button class="btn btn-sm btn-primary position-sticky" style="width: 100%">
+                                View Log
+                           </button>
+                        </div>
                         @foreach ($contents  as $ele)
                             <a href="#" class="navi-item">
                                 <div class="navi-link rounded">
-                                    <div class="symbol symbol-50 mr-3">
-                                        <div class="symbol-label">
-                                            <i class="flaticon-bell text-success icon-lg"></i>
-                                        </div>
-                                    </div>
                                     <div class="navi-text">
-                                        <div class="font-size-lg"> <b>{{ $ele->user->name }}:</b>  {{ $ele->log_details }}</div>
+                                        <div class="font-size-sm text-dark"> <b>{{ $ele->user->name }}:</b>  {{ $ele->log_details }}</div>
+                                        <div class="text-muted text-truncate">{{ \Carbon\Carbon::parse($ele->created_at)->format('d-m-Y | h:i:s')}}</div>
                                     </div>
                                 </div>
                             </a>
