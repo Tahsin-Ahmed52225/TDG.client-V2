@@ -124,7 +124,7 @@
                                                 <div class="card-body">
                                                     <h3 class="card-title font-weight-bolder text-dark">Project Progress : </h3>
                                                     <div class="progress">
-                                                        <div class="progress-bar progress-bar-striped progress-bar-animated {{ ($completedTask === count($tasks)) ? "bg-success":"" }} " role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{ ($completedTask/count($tasks))*100 }}%"></div>
+                                                        <div class="progress-bar progress-bar-striped progress-bar-animated {{ ($completedTask === count($tasks)) ? "bg-success":"" }} " role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: {{ (count($tasks) >0 ) ? ($completedTask/count($tasks))*100 : 0}}%"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -147,7 +147,7 @@
                                                 <!--end::Header-->
                                                 <!--begin::Body-->
                                                 <div class="card-body" id="task_board">
-                                                    <table class="table table-striped" id="kt_datatable2">
+                                                    <table class="table table-striped data-table">
                                                         <thead>
                                                                 <th>
                                                                     #
@@ -156,8 +156,8 @@
                                                                    Task Title
                                                                 </th>
                                                                 <th>
-                                                                    Assigned
-                                                                </th>
+                                                                    Assigned Member
+                                                                 </th>
                                                                 <th>
                                                                     Due Date
                                                                 </th>
@@ -167,36 +167,7 @@
                                                         </thead>
                                                         <tbody>
 
-                                                            @foreach ( $tasks as $value )
-                                                            <tr>
-                                                                <td>
-                                                                    <input class='task_checkbox' data-id="{{ $value->id }}" type="checkbox" {{ ($value->complete != 0 ) ? "checked" : ""}}>
-                                                                </td>
-                                                                <td class="project-title" style="text-decoration: {{ ($value->complete == 0 ) ? "" : "line-through"}} ">
-                                                                    {{ $value->title }}
-                                                                </td>
-                                                                <td>
-                                                                    @foreach($value->members as $member)
-                                                                        <span class="tool" data-tip="{{ $member->user->name }} | {{ $member->user->position->title }}">
-                                                                            <i style="font-size: 25px;" class="far fa-user-circle"></i>
-                                                                        </span>
-                                                                    @endforeach
-
-                                                                </td>
-                                                                <td>
-                                                                    {{ \Carbon\Carbon::parse($value->due_date)->format('d/m/Y')}}
-                                                                </td>
-                                                                <td>
-                                                                <button data-id={{ $value->id }} class="btn edit-btn" style="border:1px solid rgb(219, 219, 219); padding-right: .5rem;" data-toggle="modal" data-target="#editProjectFileModel">
-                                                                        <i data-id={{ $value->id }} class="fas fa-edit text-info"></i>
-                                                                </button>
-                                                                <button data-id={{ $value->id }} data-page="hello" data-toggle="modal" data-target="#deleteProjectFile" class="btn delete-btn" style="border:1px solid rgb(219, 219, 219)">
-                                                                        <i data-id={{ $value->id }} class="fas fa-trash-alt text-danger"></i>
-                                                                </button>
-                                                                </td>
-                                                            </tr>
-                                                            @endforeach
-                                                        </tody>
+                                                        </tbody>
                                                     </table>
                                                 </div>
                                                 <!--end::Body-->
@@ -209,6 +180,9 @@
                                 </div>
 </div>
 @include("Project.partials.settings")
+@include("Project.modal.project_view_subtask")
 @include("Project.modal.project_add_subtask")
+@include("Project.modal.project_edit_subtask")
+@include("Project.modal.project_delete_subtask")
 {{-- @include("admin.project.modal.subtask_modal") --}}
 

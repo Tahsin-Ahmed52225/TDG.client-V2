@@ -12,7 +12,7 @@ class ProjectSubtask extends Model
     public function project(){
         return $this->belongsTo(Project::class);
     }
-    public function members(){
+    public function ProjectSubtaskAssigns(){
         return $this->hasMany(ProjectSubtaskAssigns::class);
     }
 }

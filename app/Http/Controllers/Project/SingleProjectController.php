@@ -183,12 +183,12 @@ class SingleProjectController extends Controller
         }
     }
     public function createSubtask(Request $request , $id){
-        if($request->isMethod('POST')){
+        if($request->ajax()){
             $data['title'] = $request->title;
             $data['description'] = $request->description;
             $data['priority'] = $request->priority;
             $data['due_date'] = $request->due_date;
-            $data['assigned_member'] = $request->assignee_member;
+            $data['assigned_member'] = $request->assigned_member;
 
             $validator = Validator::make($data, [
                 'title' => ['required', 'string', 'max:255'],
@@ -198,10 +198,7 @@ class SingleProjectController extends Controller
                 'due_date' => ['required','date'],
             ]);
             if ($validator->fails()) {
-                return redirect()
-                ->back()
-                ->withErrors($validator)
-                ->withInput();
+                return response()->json(['data' => $validator]);
             }else{
                 $subtask = ProjectSubtask::create([
                     'title' => $data['title'],
@@ -219,15 +216,17 @@ class SingleProjectController extends Controller
                     }
                     $project = Project::find($id);
                     LogActivity::addToLog("Task added to project: '".$project->title."'");
-                    return redirect()->back()->with(session()->flash('alert-success', 'Subtask added successfully.'));
+                    return response()->json(['data' => 'success']);
+                  //  return redirect()->back()->with(session()->flash('alert-success', 'Subtask added successfully.'));
                 }else{
-                    return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
+                    return response()->json(['data' => 'error']);
+                  // return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));
                 }
 
 
             }
         }else{
-            return redirect()->back()->with(session()->flash('alert-warning', 'Method not allowed'));
+            return response()->json(['data' => 'error']);
         }
     }
     public function taskCompleteToggle(Request $request){
@@ -239,9 +238,80 @@ class SingleProjectController extends Controller
                 $task->save();
                 $stage = ($task->complete === 1) ? 'complete' : 'incomplete';
                 LogActivity::addToLog( "'".$task->title."' marked : ".$stage);
-                return response()->json(['data' => $task->complete]);
+                $project_progress = ProjectHelp::calculateProgressPercentage($task->project_id);
+                return response()->json(['data' => $task->complete, 'project_progress'=> $project_progress]);
             }else{
                 return response()->json(['data' => 'not found']);
+            }
+        }else{
+            return response()->json(['data' => 'error']);
+        }
+
+    }
+    public function deleteSubtask(Request $request, $id){
+        if($request->ajax()){
+            $task = ProjectSubtask::find($id);
+            if($task){
+                LogActivity::addToLog( "'".$task->title."' deleted from '".$task->project->title. "'");
+                $task->delete();
+                return response()->json(['data' => 'success']);
+            }else{
+                return response()->json(['data' => 'error']);
+            }
+        }
+    }
+    public function getSubtask(Request $request, $task_id){
+        if($request->ajax()){
+            $task = ProjectSubtask::find($task_id);
+            $assigned_member = ProjectSubtask::where('project_subtask.id',$task_id)
+                    ->join('project_subtask_user_assign','project_subtask_user_assign.project_subtask_id','project_subtask.id')
+                    ->pluck('project_subtask_user_assign.user_id')->toArray();
+            if($task){
+                return response()->json(['data' => $task,'assigned_member'=> $assigned_member, 'msg'=>'Success']);
+            }else{
+                return response()->json(['msg'=>'Subtask not found']);
+            }
+        }
+    }
+    public function updateSubtask(Request $request, $task_id){
+        if($request->ajax()){
+            $data['title'] = $request->title;
+            $data['description'] = $request->description;
+            $data['priority'] = $request->priority;
+            $data['due_date'] = $request->due_date;
+            $data['assigned_member'] = $request->assigned_member;
+
+            $validator = Validator::make($data, [
+                'title' => ['required', 'string', 'max:255'],
+                'description' => ['required'],
+                'assigned_member' => ['required'],
+                'priority' => ['string', 'max:255'],
+                'due_date' => ['required','date'],
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['data' => $validator]);
+            }else{
+                $subtask = ProjectSubtask::find($task_id);
+                $subtask->title = $data['title'];
+                $subtask->description = $data['description'];
+                $subtask->priority = $data['priority'];
+                $subtask->due_date = $data['due_date'];
+                $subtask->save();
+                if($subtask){
+                    ProjectSubtaskAssigns::where('project_subtask_id', $task_id)->delete();
+                    foreach($data['assigned_member'] as $member){
+                        ProjectSubtaskAssigns::create([
+                            'project_subtask_id' => $subtask->id,
+                            'user_id' => $member,
+                        ]);
+                    }
+                    LogActivity::addToLog("Subtask Updated :'".$subtask->title."'");
+                    return response()->json(['data' => 'success']);
+                }else{
+                    return response()->json(['data' => 'error']);
+                }
+
+
             }
         }else{
             return response()->json(['data' => 'error']);

@@ -98,12 +98,19 @@
  @section('scripts')
  <script src="{{ asset('dev-assets/js/project/update_project_info.js') }}"></script>
  <script src="{{ asset('dev-assets/js/project/count_down_timer.js') }}"></script>
- <script src="{{ asset('dev-assets/js/project/subtask.js') }}"></script>
  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+
+ {{-- Intializing the select2 for project --}}
  <script>
-    $('.js-example-basic-multiple').select2();
+    $('.js-example-basic-multiple').select2({
+        allowClear: true,
+    });
+    $('.add_task').select2({
+        allowClear: true,
+    });
 </script>
+{{-- Getting back to the selected tab --}}
  <script>
     $(document).ready(function(){
         $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
@@ -115,11 +122,10 @@
         }
     });
 </script>
-
+{{-- Getting the employee view  --}}
 <script>
     $('.project_employee_view').on('click', (e)=>{
         let ID = $(e.target).attr('data-id');
-        console.log(ID);
         let URL = "{{route('project.project_assign_by_user')}}"
         $.ajax({
         url: URL,
@@ -131,8 +137,6 @@
             $("#employee_name").text(data.name);
             $("#employee_position").text(data.position);
             $("#buttons").html(data.buttons);
-
-            // $("#employee_position")
         },
         error: function (xhr, exception) {
             var msg = "";
@@ -158,16 +162,13 @@
     })
 
 </script>
-
+{{-- Intializing the datatable  --}}
 <script>
     $(document).ready(function() {
         $('#kt_datatable').DataTable();
-        $('#kt_datatable2').DataTable({
-            "bPaginate": false
-        });
     });
 </script>
-
+{{-- Project file edit and delete modal handling --}}
 <script>
     $(window).on('load',function() {
     //Delete project file
@@ -215,10 +216,111 @@
      });
 });
 </script>
+{{-- Adding task into project --}}
 <script>
     $("#submitForm").on("click",()=>{
-        $("#addsubtask").trigger("submit");
+           var title = $('input[name="title"]').val();
+           var description = $('textarea[name="description"]').val();
+           var priority = $('#priority :selected').val()
+           var due_date = $('input[name="due_date"]').val();
+           var assigned_member = $('#assignee_member').val();
+           $.ajax({
+                url: "{{ route('project.create_subtask', $project->id) }}",
+                type: "POST",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    'title':title,
+                    'description':description,
+                    'priority':priority,
+                    'due_date':due_date,
+                    'assigned_member':assigned_member,
+                    'project_id' : {{ $project->id }}
+                },
+                success: function (data) {
+                    console.log(data.data);
+                    if(data.data == "success"){
+                        // Closing the modal
+                        $('#addSubtaskmodal').modal('toggle');
+                        // Reseting the form
+                        $('#addsubtask')[0].reset();
+                        $('#assignee_member').val('').trigger('change');
+                        $('.data-table').DataTable().ajax.reload();
+                        toastr.success("Task Added successfully");
+                    }else{
+                        toastr.warning("Something went wrong");
+                    }
+                },
+                error: function (xhr, exception) {
+                    var msg = "";
+                    if (xhr.status === 0) {
+                        msg = "Not connect.\n Verify Network." + xhr.responseText;
+                    } else if (xhr.status == 404) {
+                        msg = "Requested page not found. [404]" + xhr.responseText;
+                    } else if (xhr.status == 500) {
+                        msg = "Internal Server Error [500]." +  xhr.responseText;
+                    } else if (exception === "parsererror") {
+                        msg = "Requested JSON parse failed.";
+                    } else if (exception === "timeout") {
+                        msg = "Time out error." + xhr.responseText;
+                    } else if (exception === "abort") {
+                        msg = "Ajax request aborted.";
+                    } else {
+                        msg = "Error:" + xhr.status + " " + xhr.responseText;
+                    }
+
+                }
+            });
+       // $("#addsubtask").trigger("submit");
     });
 </script>
+{{-- Yajra datatbale intialization  --}}
+<script type="text/javascript">
+    $(function () {
 
+      var table = $('.data-table').DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: "{{ route('project.show', $project->id) }}",
+          columns: [
+              {data: 'checkbox', name: 'checkbox',orderable: false, searchable: false},
+              {data: 'title', name: 'title'},
+              {data: 'taskMember', name: 'taskMember'},
+              {data: 'due_date', name: 'due_date'},
+              {data: 'action', name: 'action', orderable: false, searchable: false},
+          ],
+          "drawCallback": function() {
+                $(".project-title").on("click",function (e) {
+                    var task_id = $(e.target).attr('data-id');
+                    viewTask(task_id);
+                });
+                $(".task_checkbox").change(function (e) {
+                    taskCompleteToggler(e);
+                });
+                $(".delete_btn").on("click",(e)=>{
+                    var task_id = $(e.target).attr('data-id');
+                    $('#deleteTask').off().on("click",()=>{
+                        taskDelete(task_id);
+                    })
+                })
+                $(".edit_btn").on("click",(e)=>{
+                    var task_id = $(e.target).attr('data-id');
+                    console.log(task_id);
+                    getTaskData(task_id);
+                    $('#editUpdateBtn').off().on("click",()=>{
+                        console.log(task_id);
+                        updateTaskData(task_id);
+                    });
+                })
+
+          }
+      });
+
+    });
+    $('#editSubtaskModal').on('hide.bs.modal', function () {
+        $(".js-example-basic-multiple").val("");
+    })
+  </script>
+  <script src="{{ asset('dev-assets/js/project/subtask.js') }}"></script>
  @endsection
