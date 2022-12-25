@@ -51,6 +51,10 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapSettingsRoutes();
 
         $this->mapProjectRoutes();
+
+        $this->mapManagerRoutes();
+
+        $this->mapEmployeeRoutes();
     }
 
     /**
@@ -96,7 +100,7 @@ class RouteServiceProvider extends ServiceProvider
             ->group(base_path('routes/admin.php'));
     }
      /**
-     * Define All Settigs rotues
+     * Define All Settings rotues
      *
      *
      * @return void
@@ -115,5 +119,27 @@ class RouteServiceProvider extends ServiceProvider
             ->middleware(['web','auth','has-permisson'])
             ->name('project.')
             ->group(base_path('routes/project.php'));
+    }
+         /**
+     * Define All Admin rotues
+     *
+     *
+     * @return void
+     */
+    protected function mapManagerRoutes()
+    {
+        Route::prefix('manager')
+            ->namespace($this->namespace)
+            ->middleware(['web','auth', 'manager'])
+            ->name('manager.')
+            ->group(base_path('routes/manager.php'));
+    }
+    protected function mapEmployeeRoutes()
+    {
+        Route::prefix('employee')
+            ->namespace($this->namespace)
+            ->middleware(['web','auth', 'employee'])
+            ->name('employee.')
+            ->group(base_path('routes/employee.php'));
     }
 }

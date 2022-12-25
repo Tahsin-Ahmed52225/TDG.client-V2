@@ -33,12 +33,11 @@
                         <table class="table table-bordered table-hover table-checkable text-center " id="kt_datatable">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>#</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Phone</th>
                                     <th>Role</th>
-                                    <th>Stage</th>
                                     <th>Actions</th>
                                 </tr>
 
@@ -60,7 +59,7 @@
                                             <div style="display:none;" id="position-edit{{ $values->id }}">
                                                 <select style="border:none" id="positionD{{ $values->id }}">
                                                     @foreach($roles as $role)
-                                                     <option value={{ $role->slug }}>{{ $role->title }}</option>
+                                                     <option value={{ $role->id }}>{{ $role->title }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -71,28 +70,19 @@
 
 
                                         </td>
-                                        @if ($values->verified == 1)
-                                            <td style="padding: 17px 5px !important;" class="text-success">Verified</td>
-                                        @else
-                                            <td style="padding: 17px 5px !important;" class="text-warning">Not Verified
-                                            </td>
-                                        @endif
                                         <td>
-                                            <div class="row">
-                                                <div class="col d-flex align-items-center justify-content-end   "
-                                                    onclick="deleteMember({!! $values->id !!})">
-                                                    <i class="fas fa-trash-alt p_icon"></i>
+                                            <div class="d-flex justify-content-center align-items-center">
+                                                <i class="fas fa-sign-in-alt pr-3 login_icon" data-id={{ $values->id }} data-toggle="tooltip" data-placement="top" title="Login Into Member Dashboard"></i>
+                                                <div class=" pr-3" data-id={{ $values->id }}  data-toggle="modal" data-target="#employeeDelete" >
+                                                    <i class="fas fa-trash-alt p_icon" data-id={{ $values->id }} data-toggle="tooltip" data-placement="top" title="Delete Member"></i>
                                                 </div>
-
-                                                <div class="col d-flex align-items-center justify-content-start">
-                                                    <input class="switchT" data-stage={{ $values->stage }}
-                                                        data-user={{ $values->id }} id="toggle{{ $values->id }}"
-                                                        type="checkbox" data-on="Lock" data-off="Unlock"
-                                                        data-toggle="toggle" data-width="95" data-height="10"
-                                                        data-offstyle="danger" <?php if ($values->stage == 1) {
-                                                        echo 'checked';
-                                                    } ?>>
-                                                </div>
+                                                <input class="switchT" data-stage={{ $values->stage }}
+                                                data-user={{ $values->id }} id="toggle{{ $values->id }}"
+                                                type="checkbox" data-on="Lock" data-off="Unlock"
+                                                data-toggle="toggle" data-width="95" data-height="10"
+                                                data-offstyle="danger" <?php if ($values->stage == 1) {
+                                                echo 'checked';
+                                            } ?>>
                                             </div>
                                         </td>
                                     </tr>
@@ -108,7 +98,14 @@
         </div>
         <!--end::Entry-->
     </div>
+
+
+@include('Admin.Modals.employee_delete')
+
+
 @endsection
+
+
 
 @section('scripts')
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
@@ -129,7 +126,61 @@
     </script>
     <script>
         $(document).ready(function() {
-            $('#kt_datatable').DataTable();
+            $('#kt_datatable').DataTable({
+                "paging": false
+            });
         });
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    <script>
+        $('.p_icon').on("click", (e)=>{
+               var employee_id = $(e.target).attr("data-id");
+               $("#employee_del_button").attr('onclick',`deleteMember(`+employee_id+`)`);
+        });
+        $('.login_icon').on("click", (e)=>{
+               var employee_id = $(e.target).attr("data-id");
+               $.ajax({
+                    headers: {
+                            'X-CSRF-TOKEN': "{{csrf_token()}}",
+                        },
+                    url: `{{ route('admin.employee_login') }}`,
+                    type: "POST",
+                    data: { user_id: employee_id },
+                    success: function (data) {
+                        console.log(data);
+                        toastr.success("Logged in successfully",{
+                            timeOut: 2000,
+                            preventDuplicates: true,
+                        });
+                        setTimeout(function () {
+                            window.location.href = data.url;
+                            window.clearTimeout(tID);		// clear time out.
+                        }, 3000);
+
+                    },
+                    error: function (xhr, exception) {
+                        var msg = "";
+                        if (xhr.status === 0) {
+                            msg = "Not connect.\n Verify Network." + xhr.responseText;
+                        } else if (xhr.status == 404) {
+                            msg = "Requested page not found. [404]" + xhr.responseText;
+                        } else if (xhr.status == 500) {
+                            msg = "Internal Server Error [500]." +  xhr.responseText;
+                        } else if (exception === "parsererror") {
+                            msg = "Requested JSON parse failed.";
+                        } else if (exception === "timeout") {
+                            msg = "Time out error." + xhr.responseText;
+                        } else if (exception === "abort") {
+                            msg = "Ajax request aborted.";
+                        } else {
+                            msg = "Error:" + xhr.status + " " + xhr.responseText;
+                        }
+
+                    }
+                });
+        });
+
     </script>
 @endsection

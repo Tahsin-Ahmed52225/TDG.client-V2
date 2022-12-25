@@ -10,7 +10,8 @@ function deleteMember($id){
            // alert(row);
             $("#"+row).fadeTo("slow",0.2, function(){
                 $(this).remove();
-                $('div.flash-message').html(data);
+                $("#employeeDelete").modal('hide');
+                toastr.success("Employee Successfully Deleted");
             })
 
         },
@@ -20,10 +21,6 @@ function deleteMember($id){
 })
 }
 function updateMember($id , $option , $value){
-    console.log(`id: ${$id}`);
-    console.log(typeof($id));
-    console.log(`option: ${$option}`);
-    console.log(`value: ${$value}`);
 
     if($option != "position"){
         $("#"+$option+$id).attr('contenteditable','false');
@@ -41,9 +38,16 @@ function updateMember($id , $option , $value){
                'value':$value
          },
         success:function(data){
-        $('div.flash-message').html(data);
-       // console.log("done");
-
+            console.log(data);
+            if(data.data === "error"){
+                toastr.error(data.msg,{
+                    preventDuplicates: true,
+                });
+            }else{
+                toastr.success(data.data,{
+                    preventDuplicates: true,
+                });
+            }
         },
         error: function (xhr, status, error) {
             console.log(xhr.responseText);
@@ -64,7 +68,6 @@ function updateName($id){
             $("#name"+$id).html(function(){
                 $("#name"+$id).html  = $("#name"+$id).html().replace(/(?:&nbsp;|<br>)/g,'');
             });
-            console.log($("#name"+$id).html());
            updateMember($id,"name",$("#name"+$id).text() )
 
         }
@@ -91,7 +94,7 @@ function updatePhone($id){
         if (event.key === 'Enter') {
             event.preventDefault();
            // console.log($("#name"+$id).text());
-            updateMember($id,"number",$("#number"+$id).text() )
+            updateMember($id,"phone",$("#number"+$id).text() )
 
         }
       });
@@ -105,9 +108,10 @@ function updatePosition($id){
            $msg = "positionD"+$id+" :selected"
 
     //console.log();
-          updateMember($id,"position",$('#'+$msg).text())
-
+          updateMember($id,"role_id",$('#'+$msg).val());
          $("#position"+$id).text($('#'+$msg).text());
+         $("#position"+$id).css('display','block');
+         $("#position-edit"+$id).css('display','none');
       });
 
 }

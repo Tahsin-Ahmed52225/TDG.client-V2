@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Ui\Presets\React;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -59,8 +59,15 @@ class LoginController extends Controller
      * @return to_login_page
      */
     public function logout(){
-        Auth::logout();
+        if(Session::get('session-hop')){
+            Auth::loginUsingId(decrypt(Session::get('session-hop')));
+            Session::forget('session-hop');
+            return redirect('../'.Auth::user()->role->slug.'/dashboard');
+        }else{
+            Auth::logout();
+        }
         return redirect('/login');
+
     }
 
 }

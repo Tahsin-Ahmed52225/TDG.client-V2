@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Helper\LogActivity;
+use App\Rules\PhoneNumber;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
+use Illuminate\Http\JsonResponse;
 
 // Custom Model
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Position;
+
 
 class EmployeeController extends Controller
 {
@@ -56,7 +60,7 @@ class EmployeeController extends Controller
             $validator = Validator::make($data, [
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-                'phone' => ['required', 'string', 'max:255'],
+                'phone' => ['required', new PhoneNumber],
                 'role' => ['required'],
                 'position' => ['required'],
                 'password' => ['required', 'string', 'min:6'],
@@ -70,7 +74,7 @@ class EmployeeController extends Controller
                 $user = User::create([
                     'name' =>  $data['name'],
                     'email' =>   $data['email'],
-                    'number' => $data['phone'],
+                    'phone' => $data['phone'],
                     'position_id' => $data['position'],
                     'role_id' =>  $data['role'],
                     'verification_code' => $token,
@@ -125,8 +129,7 @@ class EmployeeController extends Controller
             $user = User::find($request->id);
             if ($request->value == null) {
                 $msg = ucwords($request->option) . " shouldn't be empty";
-                Session::flash('error', $msg);
-                return View::make('Common/partials/flash_message');
+                return response()->json(["data" => 'error','msg' =>  $msg]);
             } else {
                 if ($request->option == "email") {
                     if (filter_var($request->value, FILTER_VALIDATE_EMAIL)) {
@@ -135,34 +138,28 @@ class EmployeeController extends Controller
                             $user->$option =  filter_var($request->value, FILTER_SANITIZE_EMAIL);
                             $user->save();
                             $msg = ucwords($request->option) . " updated successfully";
-                            Session::flash('success', $msg);
                             LogActivity::addToLog( $user->name." : ".$msg);
-                            return View::make("Common/partials/flash_message");
+                            return response()->json(["data" => $msg]);
                         } else {
-                            Session::flash('error', "Something went wrong");
-                            return View::make("Common/partials/flash_message");
+                            return response()->json(["data" => 'error' ,'msg' => 'Something went wrong']);
                         }
                     } else {
-                        Session::flash('error', "Enter valid email");
-                        return View::make("Common/partials/flash_message");
+                            return response()->json(["data" => 'error','msg' => 'Enter valid email address']);
                     }
-                } else if ($request->option == "number") {
-                    if (filter_var($request->value, FILTER_VALIDATE_INT)) {
+                } else if ($request->option == "phone") {
+                    if ($request->value) {
                         if ($user) {
                             $option = $request->option;
-                            $user->$option =  filter_var($request->value, FILTER_VALIDATE_INT);
+                            $user->$option =  $request->value;
                             $user->save();
                             $msg = ucwords($request->option) . " updated successfully";
-                            Session::flash('success', $msg);
                             LogActivity::addToLog( $user->name." : ".$msg);
-                            return View::make("Common/partials/flash_message");
+                            return response()->json(["data" => $msg]);
                         } else {
-                            Session::flash('error', "Something went wrong");
-                            return View::make("Common/partials/flash_message");
+                            return response()->json(["data" => 'error','msg' => 'Something went wrong']);
                         }
                     } else {
-                        Session::flash('error', "Incorrect input");
-                        return View::make("Common/partials/flash_message");
+                        return response()->json(["data" => 'error','msg' => 'Enter valid number']);
                     }
                 } else {
                     if ($user) {
@@ -170,12 +167,10 @@ class EmployeeController extends Controller
                         $user->$option =  $request->value;
                         $user->save();
                         $msg = ucwords($request->option) . " updated successfully";
-                        Session::flash('success', $msg);
                         LogActivity::addToLog( $user->name." : ".$msg);
-                        return View::make("Common/partials/flash_message");
+                        return response()->json(["data" => $msg]);
                     } else {
-                        Session::flash('error', "Something went wrong");
-                        return View::make("Common/partials/flash_message");
+                        return response()->json(["data" => 'error','msg' => 'Enter valid email address']);
                     }
                 }
             }
@@ -204,6 +199,15 @@ class EmployeeController extends Controller
             }
         } else {
             return redirect('/');
+        }
+    }
+    public function employeeLogin(Request $request){
+        if ($request->ajax()) {
+            Session::put('session-hop', encrypt(Auth::user()->id));
+            Auth::loginUsingId($request->user_id);
+            $user = User::where('id',$request->user_id)->first();
+            $URL = '../'.$user->role->slug.'/dashboard';
+            return response()->json(['data' =>$request->user_id, 'url'=>$URL]);
         }
     }
 }

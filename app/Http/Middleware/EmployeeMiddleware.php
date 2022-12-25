@@ -16,7 +16,7 @@ class EmployeeMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::user()->isEmployee()) {
+        if (Auth::user()->role->title == "Employee") {
             return $next($request);
         }
         Auth::logout();

@@ -56,6 +56,7 @@ class Kernel extends HttpKernel
         'has-permisson' => \App\Http\Middleware\HasPermissonMiddleware::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'employee' => \App\Http\Middleware\EmployeeMiddleware::class,
+        'manager' => \App\Http\Middleware\ManagerMiddleware::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,

@@ -16,7 +16,7 @@ class ManagerMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::user()->isManager()) {
+        if (Auth::user()->role->title == "Manager") {
             return $next($request);
         }
         Auth::logout();
