@@ -1,6 +1,8 @@
 @extends((Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager") ? 'layouts.'.Auth::user()->role->slug : 'loayouts.employee')
 @section("links")
-
+.btn-sm{
+    padding: 0.55rem 0.55rem !important;
+}
 @endsection
 
 @section("content")
@@ -46,11 +48,12 @@
                                         {{ $values->slug }}
                                     </td>
                                     <td>
-                                        @if($values->title == "Admin" || $values->title == "Manager" || $values->title == "Employee")
-                                            <span>Default</span>
+                                        @if($values->title == "Manager" || $values->title == "Employee")
+                                            <a href="{{ route('settings.permissions', encrypt($values->id)) }}" class="btn btn-info btn-sm" data-toggle="tooltip" data-placement="top" title="Role Permisson"><i class="fas fa-lock"></i></a>
                                         @else
-                                            <button  data-id="{{ $values->id }}" data-toggle="modal" data-target="#role_edit_modal" class="btn btn-sm btn-primary edit_role_btn">Edit</button>
-                                            <button  data-id="{{ $values->id }}" class="btn btn-sm btn-danger delete_btn" data-toggle="modal" data-target="#delete_modal" >Delete</button>
+                                            <button  data-id="{{ $values->id }}" data-toggle="modal" data-target="#role_edit_modal" class="btn btn-sm btn-primary edit_role_btn"><i class="fas fa-edit"></i></button>
+                                            <button  data-id="{{ $values->id }}" class="btn btn-sm btn-danger delete_btn" data-toggle="modal" data-target="#delete_modal" ><i class="fas fa-trash" aria-hidden="true"></i></button>
+                                            <a href="{{ route('settings.permissions', encrypt($values->id)) }}" class="btn btn-info btn-sm" data-toggle="tooltip" data-placement="top" title="Role Permisson"><i class="fas fa-lock"></i></a>
                                         @endif
                                     </td>
                                 </tr>

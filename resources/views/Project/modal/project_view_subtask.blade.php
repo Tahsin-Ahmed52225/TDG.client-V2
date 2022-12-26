@@ -12,10 +12,12 @@
         <div class="modal-body">
                 <div class="row">
                     <div class="col d-flex align-items-center">
-                        <div class="mb-4">
-                            <span class="badge badge-secondary">Project : {{ $project->title }}</span>
-                            <span class="badge badge-pill" id="task_priority"></span>
-                        </div>
+                        @isset($project)
+                            <div class="mb-4">
+                                <span class="badge badge-secondary">Project : {{ $project->title }}</span>
+                                <span class="badge badge-pill" id="task_priority"></span>
+                            </div>
+                        @endisset
                     </div>
                     <div class="col">
                         <div class="card card-custom gutter-b card-stretch" style="background-color: #1B283F;">

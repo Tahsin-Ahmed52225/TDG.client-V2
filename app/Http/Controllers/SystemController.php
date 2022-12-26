@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permisson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Route;
 
 # Custom Models
 use App\Models\Role;
@@ -13,7 +15,7 @@ class SystemController extends Controller
     public function role(Request $request){
         if($request->isMethod("GET")){
 
-            $roles = Role::all();
+            $roles = Role::where('title','!=','Admin')->get();
             //dd($roles);
             return view("Settings.role",['roles'=>$roles]);
         }
@@ -74,6 +76,23 @@ class SystemController extends Controller
                 $role->save();
                 return redirect()->back()->with(session()->flash('success', 'Role Updated !'));
             }
+        }
+    }
+    public function permission(Request $request, $id){
+        if($request->isMethod("GET")){
+            $routeCollection = Route::getRoutes();
+            $arr = [];
+
+            foreach ($routeCollection as $value) {
+                if (preg_match('/^\/?project/', $value->getName()) || preg_match('/^\/?settings/', $value->getName()) ) {
+                    $arr[] = $value->getName();
+                }
+            }
+            $filteredRoutes = array_unique($arr);
+            //dd($filteredRoutes);
+            $role = Role::where('id',decrypt($id))->get('title');
+            $permisson = Permisson::where('role_id',decrypt($id));
+            return view("Settings.permisson",['permisson'=>$permisson , 'role'=> $role , 'filteredRoutes'=>$filteredRoutes]);
         }
     }
 

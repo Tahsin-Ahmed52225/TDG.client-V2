@@ -27,7 +27,7 @@ class ProjectController extends Controller
     public function index()
     {
         if(Auth::user()->role->title){
-            $projects = Project::all();
+            $projects = Project::where('id','!=',1);
             return view('project.index',compact('projects'));
         }else{
             dd("Working on it");
@@ -43,7 +43,7 @@ class ProjectController extends Controller
     {
         if($request->isMethod("GET")){
             $employee = User::where('role_id','!=',1)->get();
-            $record = Project::take(3)->orderBy('due_date', 'desc')->get();
+            $record = Project::take(3)->where('id','!=',1)->orderBy('due_date', 'desc')->get();
             return view('project.create',['record' => $record,'employee' => $employee]);
         }
     }
@@ -116,6 +116,7 @@ class ProjectController extends Controller
      */
     public function show(Request $request,$id)
     {
+
         $project = Project::find($id);
         #tasks
         $tasks = ProjectSubtask::where("project_id", $project->id)->orderBy('created_at', 'DESC')->get();
@@ -178,7 +179,7 @@ class ProjectController extends Controller
         $notAssignUser = array_map('unserialize',$notAssignUser);
         # Project file data
         $files = ProjectFiles::where('project_id',$project->id)->get();
-        if($project){
+        if($project && ($id != 1)){
             return view('project.single', ['project' => $project, 'notAssignUser' => $notAssignUser , 'files' => $files ,'userAssigned' => $userAssigned , 'tasks' => $tasks , 'completedTask' => $completedTask]);
         }else{
             return redirect()->back()->with(session()->flash('alert-warning', 'Something went wrong'));

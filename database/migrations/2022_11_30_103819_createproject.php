@@ -18,7 +18,8 @@ class Createproject extends Migration
             $table->string("title")
                   ->comment("Project Title");
             $table->unsignedBigInteger("created_by")
-                  ->comment("Project Added By");
+                  ->comment("Project Added By")
+                  ->nullable();
             $table->unsignedBigInteger("client_id")
                   ->nullable()
                   ->comment("Project Client ID");
@@ -26,15 +27,19 @@ class Createproject extends Migration
                   ->nullable()
                   ->comment("Project Manager ID");
             $table->dateTime("due_date")
+                  ->nullable()
                   ->comment("Project Due Date");
             $table->string("status")
+                  ->nullable()
                   ->comment("Project Added By");
             $table->string("priority")
+                  ->nullable()
                   ->comment("Project Priority");
             $table->text("description")
                   ->nullable()
                   ->comment("Project Description");
             $table->text("type")
+                  ->nullable()
                   ->comment("Project Type");
             $table->integer("budget")
                   ->nullable()

@@ -1,7 +1,7 @@
 <div class="modal fade" id="addSubtaskmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
-        <form id="addsubtask" method="POST" action={{ route('project.create_subtask' , $project->id) }}>
+        <form id="addsubtask" method="POST" action={{ route('project.create_subtask' , isset($project->id) ? $project->id : 1) }}>
         @csrf
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Add Subtask</h5>
@@ -22,7 +22,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                       <label for="inputCity">Due Date</label>
-                      <input type="date" class="form-control" name="due_date" max={{ $project->due_date }} required>
+                      <input type="date" class="form-control" name="due_date" @isset($project->id) max={{ $project->due_date }} @endisset required>
                     </div>
                     <div class="form-group col-md-6">
                       <label for="inputState">Priority</label>

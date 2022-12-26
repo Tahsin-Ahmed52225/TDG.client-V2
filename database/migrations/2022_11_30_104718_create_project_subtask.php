@@ -33,6 +33,7 @@ class CreateProjectSubtask extends Migration
                 ->default(false)
                 ->comment("Project Subtask Complete");
             $table->unsignedBigInteger("project_id")
+                ->nullable()
                 ->comment("Project ID");
 
 

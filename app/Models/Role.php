@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 # Custom Models
 use App\Models\User;
+use App\Models\Permisson;
 
 class Role extends Model
 {
@@ -28,4 +29,9 @@ class Role extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function permissons()
+    {
+        return $this->hasMany(Permisson::class);
+    }
+
 }
