@@ -9,7 +9,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="deleteTask" data-id=0  class="btn btn-danger ">Yes! Sure</button>
+          <button id="deleteTaskBtn" class="btn btn-danger ">Yes! Sure</button>
         </div>
       </div>
     </div>

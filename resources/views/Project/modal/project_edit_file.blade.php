@@ -3,7 +3,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title text-info" id="exampleModalLabel">Edit Project File</h5>
-          <a href="#" class="close" data-dismiss="modal" aria-label="close">&times;</a>
+          <a style="display:block !important;" href="#" class="close" data-dismiss="modal" aria-label="close">&times;</a>
         </div>
         <div class="modal-body">
             <form id='edit_form' method="POST"

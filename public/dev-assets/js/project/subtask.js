@@ -1,42 +1,26 @@
-// $(".task_checkbox").change(function (e) {
-//     taskCompleteToggler(e);
-// });
-// $(".delete_btn").on("click",(e)=>{0
-//     var task_id = $(e.target).attr('data-id');
-//     $('#deleteTask').on("click",()=>{
-//         taskDelete(task_id);
-//     })
-// })
-// $(".edit_btn").on("click",(e)=>{
-//     var task_id = $(e.target).attr('data-id');
-//     getTaskData(task_id);
-//     $('#taskEditForm').on("click",()=>{
-//         updateTaskData(task_id);
-//     })
-
-// })
-
-
-
     // Toggle task complete value
-    function taskCompleteToggler(e) {
+    function taskCompleteToggler(e , URL) {
         $.ajax({
             type: 'GET',
-            url: '../task-complete-toggle',
+            url: URL,
             data: {
                 task_id: $(e.target).attr('data-id'),
             },
             success: function (data) {
+                console.log(data);
                 if(data.data === 0 || data.data === 1){
                     $(e.target).parent().siblings().children('.project-title').css('text-decoration', data.data == 1 ? 'line-through' : 'none');
-                    var progress_width = data.project_progress.toString()+`%`
-                    $('.progress-bar').width(progress_width)
-                    if(progress_width == '100%'){
-                        $('.progress-bar').addClass('bg-success')
-                    }else{
-                        $('.progress-bar').removeClass('bg-success')
+                    if ($(".progress-bar")[0]){
+                        var progress_width = data.project_progress.toString()+`%`
+                        $('.progress-bar').width(progress_width)
+                        if(progress_width == '100%'){
+                            $('.progress-bar').addClass('bg-success')
+                        }else{
+                            $('.progress-bar').removeClass('bg-success')
+                        }
                     }
                     toastr.success((data.data == 1)? "Task Complete": "Task mark imcomplete");
+
                 }else if(data.data == "not found"){
                     toastr.success("Task not found");
                 }else{
@@ -50,15 +34,16 @@
 
     }
     // Delete task delete
-    function taskDelete(task_id){
+    function taskDelete(URL){
         $.ajax({
             type: 'GET',
-            url: `../delete-subtask/`+task_id,
+            url: URL,
                 success: function (data) {
                     if(data.data = "success"){
+                        $('.data-table').DataTable().ajax.reload();
                         toastr.success("Task Deleted Successfully");
                         $('#deleteTask').modal('hide');
-                        $('.data-table').DataTable().ajax.reload();
+
                     }
                 },
                 error: function (xhr) {
@@ -67,10 +52,10 @@
             });
     }
     // Get task details
-    function getTaskData(task_id){
+    function getTaskData(URL){
         $.ajax({
             type: 'GET',
-            url: `../get-subtask/`+task_id,
+            url: URL,
                 success: function (data) {
                     if(data.msg = "success"){
                         console.log(data);
@@ -88,14 +73,14 @@
             });
     }
     // Update task details
-    function updateTaskData(task_id){
+    function updateTaskData(URL){
            var title = $('input[name="edit_title"]').val();
            var description = $('textarea[name="edit_description"]').val();
            var priority = $('select[name="edit_priority"]').val();
            var due_date = $('input[name="edit_due_date"]').val();
            var assigned_member = $('.js-example-basic-multiple').val();
            $.ajax({
-            url: `../update-subtask/`+task_id,
+            url: URL,
             type: "POST",
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -142,10 +127,10 @@
             }
         });
     }
-    function viewTask(task_id){
+    function viewTask(URL){
         $.ajax({
             type: 'GET',
-            url: `../get-subtask/`+task_id,
+            url: URL,
                 success: function (data) {
                     if(data.msg = "success"){
                         console.log(data);

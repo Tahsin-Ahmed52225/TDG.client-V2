@@ -9,7 +9,7 @@ Route::post('/edit-project/{id}', 'Project\ProjectController@edit')->name("edit"
 Route::post('/update-title', 'Project\ProjectController@updateTitle')->name("update_title");
 Route::post('/update-description', 'Project\ProjectController@updateDescription')->name("update_project_description");
 Route::post('/update-member/{project_id}', 'Project\ProjectController@updateMember')->name("update_member");
-Route::get('/project/{project_id}', 'Project\ProjectController@show')->name("show");
+Route::get('project/{project_id}', 'Project\ProjectController@show')->name("show");
 Route::post('/delete-project/{project_id}', 'Project\ProjectController@destroy')->name("delete");
 
 

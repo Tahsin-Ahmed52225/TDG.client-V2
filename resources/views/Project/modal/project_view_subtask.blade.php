@@ -6,18 +6,16 @@
         <div class="modal-header">
           <h5 class="modal-title" id="subtask_title"></h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <span style="display:block !important;" aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
                 <div class="row">
                     <div class="col d-flex align-items-center">
-                        @isset($project)
                             <div class="mb-4">
-                                <span class="badge badge-secondary">Project : {{ $project->title }}</span>
+                                <span class="badge badge-secondary">Project : {{ isset($project->title) ?  $project->title : "Global" }}</span>
                                 <span class="badge badge-pill" id="task_priority"></span>
                             </div>
-                        @endisset
                     </div>
                     <div class="col">
                         <div class="card card-custom gutter-b card-stretch" style="background-color: #1B283F;">
@@ -36,8 +34,6 @@
               </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button id="taskEditForm" type="button" class="btn btn-primary">Update Task</button>
         </div>
         </form>
       </div>

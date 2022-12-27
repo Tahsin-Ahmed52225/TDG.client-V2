@@ -27,7 +27,7 @@ class ProjectController extends Controller
     public function index()
     {
         if(Auth::user()->role->title){
-            $projects = Project::where('id','!=',1);
+            $projects = Project::where('id','!=',1)->get();
             return view('project.index',compact('projects'));
         }else{
             dd("Working on it");

@@ -293,24 +293,31 @@
           "drawCallback": function() {
                 $(".project-title").on("click",function (e) {
                     var task_id = $(e.target).attr('data-id');
-                    viewTask(task_id);
+                    var URL = "{{ route('project.get_subtask', -1) }}";
+                    URL = URL.replace('-1', task_id);
+                    viewTask(URL);
                 });
                 $(".task_checkbox").change(function (e) {
-                    taskCompleteToggler(e);
+                    var URL = '{{ route("project.task_complete_toggle") }}'
+                    taskCompleteToggler(e , URL);
                 });
                 $(".delete_btn").on("click",(e)=>{
                     var task_id = $(e.target).attr('data-id');
                     $('#deleteTask').off().on("click",()=>{
-                        taskDelete(task_id);
+                        var URL = "{{ route('project.delete_subtask', -1) }}";
+                        URL = URL.replace('-1', task_id);
+                        taskDelete(URL);
                     })
                 })
                 $(".edit_btn").on("click",(e)=>{
                     var task_id = $(e.target).attr('data-id');
-                    console.log(task_id);
-                    getTaskData(task_id);
+                    var URL = "{{ route('project.get_subtask', -1) }}";
+                    URL = URL.replace('-1', task_id);
+                    getTaskData(URL);
                     $('#editUpdateBtn').off().on("click",()=>{
-                        console.log(task_id);
-                        updateTaskData(task_id);
+                        var URL = "{{ route('project.update_subtask', -1) }}";
+                        URL = URL.replace('-1', task_id);
+                        updateTaskData(URL);
                     });
                 })
 
