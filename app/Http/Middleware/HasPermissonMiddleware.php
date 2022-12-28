@@ -16,7 +16,7 @@ class HasPermissonMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager") {
+        if (Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager" || Auth::user()->role->title == "Employee") {
             return $next($request);
         }
         Auth::logout();

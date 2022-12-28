@@ -4,6 +4,7 @@
     <link href="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet"
         type="text/css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="{{ asset('dev-assets/css/tooltip.css') }}">
     <!--end::Page Vendors Styles-->
     <style>
          .select2{

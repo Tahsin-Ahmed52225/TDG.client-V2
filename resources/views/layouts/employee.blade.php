@@ -516,7 +516,7 @@
                             <div class="form-group mb-0 row align-items-center">
                                 <label class="col-8 col-form-label">Permisson :</label>
                                 <div class="col-4 d-flex justify-content-end">
-                                    <a href="{{ route("settings.permissons") }}" class="btn btn-sm btn-primary">View</a>
+                                    <a href="#" class="btn btn-sm btn-primary">View</a>
                                 </div>
                             </div>
                             <div class="form-group mb-0 row align-items-center">
