@@ -200,13 +200,16 @@ class SingleProjectController extends Controller
             if ($validator->fails()) {
                 return response()->json(['data' => $validator]);
             }else{
+                $order  = count(ProjectSubtask::where('status','todo')->get())+1;
                 $subtask = ProjectSubtask::create([
                     'title' => $data['title'],
                     'description' => $data['description'],
                     'priority' => $data['priority'],
                     'due_date' => $data['due_date'],
-                    'project_id' => $id
+                    'project_id' => $id,
                 ]);
+                $subtask->order = $order;
+                $subtask->save();
                 if($subtask){
                     foreach($data['assigned_member'] as $member){
                         ProjectSubtaskAssigns::create([

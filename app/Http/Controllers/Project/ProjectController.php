@@ -116,7 +116,6 @@ class ProjectController extends Controller
      */
     public function show(Request $request,$id)
     {
-
         $project = Project::find($id);
         #tasks
         $tasks = ProjectSubtask::where("project_id", $project->id)->orderBy('created_at', 'DESC')->get();

@@ -135,6 +135,7 @@
                     if(data.msg = "success"){
                         console.log(data);
                         $("#subtask_title").text(data.data.title);
+                        $("#subtask_title").css('text-decoration', (data.data.complete == 0)? 'none' : 'line-through');
                         $("#task_details").text(data.data.description);
                         if(data.data.priority == 'low'){
                             $("#task_priority").removeClass('badge-warning');

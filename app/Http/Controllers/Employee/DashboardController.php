@@ -44,11 +44,14 @@ class DashboardController extends Controller
             ->editColumn('title', function(ProjectSubtask $value) {
                 $style = ($value->complete == 1) ? 'line-through' : '';
                 if($value->priority == "low"){
-                    $badge = '<span class="badge badge-pill badge-primary">'.$value->priority.'</span>';
+                    $badge = '<span class="badge badge-pill badge-primary mr-2">'.$value->priority.'</span>';
+                    $badge = $badge.'<span class="badge badge-dark">'.$value->status.'</span>';
                 }else if($value->priority == "medium"){
-                    $badge = '<span class="badge badge-pill badge-warning">'.$value->priority.'</span>';
+                    $badge = '<span class="badge badge-pill badge-warning mr-2">'.$value->priority.'</span>';
+                    $badge = $badge.'<span class="badge badge-dark">'.$value->status.'</span>';
                 }else{
-                    $badge = '<span class="badge badge-pill badge-danger">'.$value->priority.'</span>';
+                    $badge = '<span class="badge badge-pill badge-danger mr-2">'.$value->priority.'</span>';
+                    $badge = $badge.'<span class="badge  badge-dark">'.$value->status.'</span>';
                 }
                 return '<span data-id='.$value->id.' class="project-title mr-2" style="cursor: pointer;text-decoration:'.$style.'" data-toggle="modal" data-target="#viewSubtask">' . $value->title . '</span>'. $badge;
             })

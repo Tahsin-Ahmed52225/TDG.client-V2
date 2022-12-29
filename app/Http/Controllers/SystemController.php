@@ -6,9 +6,12 @@ use App\Models\Permisson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Route;
+use DataTables;
 
 # Custom Models
 use App\Models\Role;
+use App\Models\Log;
+use App\Models\User;
 
 class SystemController extends Controller
 {
@@ -95,5 +98,51 @@ class SystemController extends Controller
             return view("Settings.permisson",['permisson'=>$permisson , 'role'=> $role , 'filteredRoutes'=>$filteredRoutes]);
         }
     }
-
+    public function log(Request $request){
+       $allLog = Log::orderBy('created_at', 'DESC')->get();
+       if($request->ajax()){
+            return Datatables::of($allLog)
+            ->editColumn('user_id', function(Log $value) {
+                $user = User::find($value->user_id);
+                return $user->name;
+            })
+            ->editColumn('created_at', function(Log $value) {
+                return \Carbon\Carbon::parse($value->due_date)->format('d/m/Y');
+            })
+            ->removeColumn('updated_at')
+            ->addColumn('action', function(Log $value){
+                $btn ='<button data-id='.$value->id.' class="btn delete_btn" style="border:1px solid rgb(219, 219, 219); padding-right: .5rem;" data-toggle="modal" data-target="#deleteTask">'
+                        .'<i data-id='.$value->id.' class="fas fa-trash-alt text-danger"></i>'
+                    .'</button>';
+                    return $btn;
+            })
+            ->rawColumns(['action','user_id','created_at'])
+            ->make(true);
+       }
+       return view('Settings.log');
+    }
+    public function logDelete(Request $request, $id){
+        if($request->ajax()){
+            $log = Log::find($id);
+            if($log){
+                $log->delete();
+                return response()->json(['msg'=>'success']);
+            }else{
+                return response()->json(['msg'=>'error']);
+            }
+        }else{
+            return response()->json(['msg'=>'error']);
+        }
+    }
+    public function logAllDelete(Request $request){
+        if($request->ajax()){
+            $log = Log::all();
+            foreach($log as $value){
+                $value->delete();
+            }
+            return response()->json(['msg'=>'success']);
+        }else{
+            return response()->json(['msg'=>'error']);
+        }
+    }
 }

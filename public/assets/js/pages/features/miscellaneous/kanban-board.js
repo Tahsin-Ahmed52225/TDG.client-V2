@@ -1,419 +1,160 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	"use strict";
-var __webpack_exports__ = {};
-/*!********************************************************************!*\
-  !*** ../demo1/src/js/pages/features/miscellaneous/kanban-board.js ***!
-  \********************************************************************/
+function changeTaskStatus(taskId, status,dataValues) {
+    $.ajax({
+        url: STATUS_URL,
+        type: "POST",
+        headers:
+            { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+        data: {
+            taskId: taskId,
+            status: status,
+            dataValues: dataValues
+        },
+        success: function (data) {
+            if(data.status == 'success'){
+                toastr.success("Task Status updated successfully");
+            }else{
+                toastr.error("Task Status update failed");
+            }
+        },
+        error: function (xhr, exception) {
+            var msg = "";
+            if (xhr.status === 0) {
+                msg = "Not connect.\n Verify Network." + xhr.responseText;
+            } else if (xhr.status == 404) {
+                msg = "Requested page not found. [404]" + xhr.responseText;
+            } else if (xhr.status == 500) {
+                msg = "Internal Server Error [500]." +  xhr.responseText;
+            } else if (exception === "parsererror") {
+                msg = "Requested JSON parse failed.";
+            } else if (exception === "timeout") {
+                msg = "Time out error." + xhr.responseText;
+            } else if (exception === "abort") {
+                msg = "Ajax request aborted.";
+            } else {
+                msg = "Error:" + xhr.status + " " + xhr.responseText;
+            }
+
+        }
+    });
+
+}
+function viewTask(URL){
+    $.ajax({
+        type: 'GET',
+        url: URL,
+            success: function (data) {
+                if(data.msg = "success"){
+                    console.log(data);
+                    $("#subtask_title").text(data.data.title);
+                    $("#subtask_title").css('text-decoration', (data.data.complete == 0)? 'none' : 'line-through');
+                    $("#task_details").text(data.data.description);
+                    if(data.data.priority == 'low'){
+                        $("#task_priority").removeClass('badge-warning');
+                        $("#task_priority").removeClass('badge-danger');
+                        $("#task_priority").addClass('badge-primary');
+                    }else if(data.data.priority == 'high'){
+                        $("#task_priority").removeClass('badge-warning');
+                        $("#task_priority").removeClass('badge-primary');
+                        $("#task_priority").addClass('badge-danger');
+
+                    }else{
+                        $("#task_priority").removeClass('badge-primary');
+                        $("#task_priority").removeClass('badge-danger');
+                        $("#task_priority").addClass('badge-warning');
+                    }
+                    $("#task_priority").text(`Priority: `+ data.data.priority);
+                    $("#due_date").text(`Due Date: `+ data.data.due_date.slice(0, 10));
+                }else{
+                    toastr.error(data.msg);
+                }
+            }
+        });
+}
+$.ajax({
+        url: URL,
+        type: "GET",
+        success: function (data) {
+            var KTKanbanBoardDemo = function() {
+
+                var _demo2 = function() {
+                    var kanban = new jKanban({
+                        element: '#kt_kanban_2',
+                        gutter: '0',
+                        widthBoard: '295px',
+                        boards: [{
+                                'id': 'todo',
+                                'title': 'Todo',
+                                'class': 'info',
+                                'item': data.todo,
+                            },
+                            {
+                                'id': 'hold',
+                                'title': 'Hold',
+                                'class': 'warning',
+                                'item': data.hold
+                            }, {
+                                'id': 'working',
+                                'title': 'Working',
+                                'class': 'primary',
+                                'item': data.working
+                            }, {
+                                'id': 'complete',
+                                'title': 'Complete',
+                                'class': 'success',
+                                'item': data.complete
+                            }
+                        ],
+                        dropEl           : function (el, target, source, sibling) {
+                            var dataValues = $(target).children().siblings().children().map(function(){
+                                return  $(this).attr('data-id')
+                            }).get();
+                            if(dataValues.length == 0){
+                                dataValues[0] = $(el).children().attr('data-id');
+                            }
+                            console.log(dataValues);
+                            changeTaskStatus($(el).children().attr('data-id'),$(target).parent().attr('data-id') , dataValues)
+                        },
+                        click            : function (el) {
+                            viewTask(`../project/get-subtask/`+$(el).children().attr('data-id'));
+                        },
+                    });
+                }
+                return {
+                    init: function() {
+                        _demo2();
+                    }
+                };
+            }();
+
+            $(document).ready(function() {
+                KTKanbanBoardDemo.init();
+            });
+
+        },
+        error: function (xhr, exception) {
+            var msg = "";
+            if (xhr.status === 0) {
+                msg = "Not connect.\n Verify Network." + xhr.responseText;
+            } else if (xhr.status == 404) {
+                msg = "Requested page not found. [404]" + xhr.responseText;
+            } else if (xhr.status == 500) {
+                msg = "Internal Server Error [500]." +  xhr.responseText;
+            } else if (exception === "parsererror") {
+                msg = "Requested JSON parse failed.";
+            } else if (exception === "timeout") {
+                msg = "Time out error." + xhr.responseText;
+            } else if (exception === "abort") {
+                msg = "Ajax request aborted.";
+            } else {
+                msg = "Error:" + xhr.status + " " + xhr.responseText;
+            }
+
+        }
+
+    });
 
 
 // Class definition
 
-var KTKanbanBoardDemo = function() {
-    // Private functions
-    var _demo1 = function() {
-        var kanban = new jKanban({
-            element: '#kt_kanban_1',
-            gutter: '0',
-            widthBoard: '250px',
-            boards: [{
-                    'id': '_inprocess',
-                    'title': 'In Process',
-                    'item': [{
-                            'title': '<span class="font-weight-bold">You can drag me too</span>'
-                        },
-                        {
-                            'title': '<span class="font-weight-bold">Buy Milk</span>'
-                        }
-                    ]
-                }, {
-                    'id': '_working',
-                    'title': 'Working',
-                    'item': [{
-                            'title': '<span class="font-weight-bold">Do Something!</span>'
-                        },
-                        {
-                            'title': '<span class="font-weight-bold">Run?</span>'
-                        }
-                    ]
-                }, {
-                    'id': '_done',
-                    'title': 'Done',
-                    'item': [{
-                            'title': '<span class="font-weight-bold">All right</span>'
-                        },
-                        {
-                            'title': '<span class="font-weight-bold">Ok!</span>'
-                        }
-                    ]
-                }
-            ]
-        });
-    }
 
-    var _demo2 = function() {
-        var kanban = new jKanban({
-            element: '#kt_kanban_2',
-            gutter: '0',
-            widthBoard: '250px',
-            boards: [{
-                    'id': '_inprocess',
-                    'title': 'In Process',
-                    'class': 'primary',
-                    'item': [{
-                            'title': '<span class="font-weight-bold">You can drag me too</span>',
-                            'class': 'light-primary',
-                        },
-                        {
-                            'title': '<span class="font-weight-bold">Buy Milk</span>',
-                            'class': 'light-primary',
-                        }
-                    ]
-                }, {
-                    'id': '_working',
-                    'title': 'Working',
-                    'class': 'success',
-                    'item': [{
-                            'title': '<span class="font-weight-bold">Do Something!</span>',
-                            'class': 'light-success',
-                        },
-                        {
-                            'title': '<span class="font-weight-bold">Run?</span>',
-                            'class': 'light-success',
-                        }
-                    ]
-                }, {
-                    'id': '_done',
-                    'title': 'Done',
-                    'class': 'danger',
-                    'item': [{
-                            'title': '<span class="font-weight-bold">All right</span>',
-                            'class': 'light-danger',
-                        },
-                        {
-                            'title': '<span class="font-weight-bold">Ok!</span>',
-                            'class': 'light-danger',
-                        }
-                    ]
-                }
-            ]
-        });
-    }
 
-    var _demo3 = function() {
-        var kanban = new jKanban({
-            element: '#kt_kanban_3',
-            gutter: '0',
-            widthBoard: '250px',
-            click: function(el) {
-                alert(el.innerHTML);
-            },
-            boards: [{
-                    'id': '_todo',
-                    'title': 'To Do',
-                    'class': 'light-primary',
-                    'dragTo': ['_working'],
-                    'item': [{
-                            'title': 'My Task Test',
-                            'class': 'primary'
-                        },
-                        {
-                            'title': 'Buy Milk',
-                            'class': 'primary'
-                        }
-                    ]
-                },
-                {
-                    'id': '_working',
-                    'title': 'Working',
-                    'class': 'light-warning',
-                    'item': [{
-                            'title': 'Do Something!',
-                            'class': 'warning'
-                        },
-                        {
-                            'title': 'Run?',
-                            'class': 'warning'
-                        }
-                    ]
-                },
-                {
-                    'id': '_done',
-                    'title': 'Done',
-                    'class': 'light-success',
-                    'dragTo': ['_working'],
-                    'item': [{
-                            'title': 'All right',
-                            'class': 'success'
-                        },
-                        {
-                            'title': 'Ok!',
-                            'class': 'success'
-                        }
-                    ]
-                },
-                {
-                    'id': '_notes',
-                    'title': 'Notes',
-                    'class': 'light-danger',
-                    'item': [{
-                            'title': 'Warning Task',
-                            'class': 'danger'
-                        },
-                        {
-                            'title': 'Do not enter',
-                            'class': 'danger'
-                        }
-                    ]
-                }
-            ]
-        });
-    }
-
-    var _demo4 = function() {
-        var kanban = new jKanban({
-            element: '#kt_kanban_4',
-            gutter: '0',
-            click: function(el) {
-                alert(el.innerHTML);
-            },
-            boards: [{
-                    'id': '_backlog',
-                    'title': 'Backlog',
-                    'class': 'light-dark',
-                    'item': [{
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-success mr-3">
-                        	            <img alt="Pic" src="assets/media/users/300_24.jpg" />
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">SEO Optimization</span>
-                        	            <span class="label label-inline label-light-success font-weight-bold">In progress</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        },
-                        {
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-success mr-3">
-                        	            <span class="symbol-label font-size-h4">A.D</span>
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">Finance</span>
-                        	            <span class="label label-inline label-light-danger font-weight-bold">Pending</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        }
-                    ]
-                },
-                {
-                    'id': '_todo',
-                    'title': 'To Do',
-                    'class': 'light-danger',
-                    'item': [{
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-success mr-3">
-                        	            <img alt="Pic" src="assets/media/users/300_16.jpg" />
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">Server Setup</span>
-                        	            <span class="label label-inline label-light-dark font-weight-bold">Completed</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        },
-                        {
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-success mr-3">
-                        	            <img alt="Pic" src="assets/media/users/300_15.jpg" />
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">Report Generation</span>
-                        	            <span class="label label-inline label-light-warning font-weight-bold">Due</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        }
-                    ]
-                },
-                {
-                    'id': '_working',
-                    'title': 'Working',
-                    'class': 'light-primary',
-                    'item': [{
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-success mr-3">
-                            	         <img alt="Pic" src="assets/media/users/300_24.jpg" />
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">Marketing</span>
-                        	            <span class="label label-inline label-light-danger font-weight-bold">Planning</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        },
-                        {
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-light-info mr-3">
-                        	            <span class="symbol-label font-size-h4">A.P</span>
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">Finance</span>
-                        	            <span class="label label-inline label-light-primary font-weight-bold">Done</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        }
-                    ]
-                },
-                {
-                    'id': '_done',
-                    'title': 'Done',
-                    'class': 'light-success',
-                    'item': [{
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-success mr-3">
-                        	            <img alt="Pic" src="assets/media/users/300_11.jpg" />
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">SEO Optimization</span>
-                        	            <span class="label label-inline label-light-success font-weight-bold">In progress</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        },
-                        {
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-success mr-3">
-                        	            <img alt="Pic" src="assets/media/users/300_20.jpg" />
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">Product Team</span>
-                        	            <span class="label label-inline label-light-danger font-weight-bold">In progress</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        }
-                    ]
-                },
-                {
-                    'id': '_deploy',
-                    'title': 'Deploy',
-                    'class': 'light-primary',
-                    'item': [{
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-light-warning mr-3">
-                        	            <span class="symbol-label font-size-h4">D.L</span>
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">SEO Optimization</span>
-                        	            <span class="label label-inline label-light-success font-weight-bold">In progress</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        },
-                        {
-                            'title': `
-                                <div class="d-flex align-items-center">
-                        	        <div class="symbol symbol-light-danger mr-3">
-                        	            <span class="symbol-label font-size-h4">E.K</span>
-                        	        </div>
-                        	        <div class="d-flex flex-column align-items-start">
-                        	            <span class="text-dark-50 font-weight-bold mb-1">Requirement Study</span>
-                        	            <span class="label label-inline label-light-warning font-weight-bold">Scheduled</span>
-                        	        </div>
-                        	    </div>
-                            `,
-                        }
-                    ]
-                }
-            ]
-        });
-
-        var toDoButton = document.getElementById('addToDo');
-        toDoButton.addEventListener('click', function() {
-            kanban.addElement(
-                '_todo', {
-                    'title': `
-                        <div class="d-flex align-items-center">
-                            <div class="symbol symbol-light-primary mr-3">
-                                <img alt="Pic" src="assets/media/users/300_14.jpg" />
-                            </div>
-                            <div class="d-flex flex-column align-items-start">
-                                <span class="text-dark-50 font-weight-bold mb-1">Requirement Study</span>
-                                <span class="label label-inline label-light-success font-weight-bold">Scheduled</span>
-                            </div>
-                        </div>
-                    `
-                }
-            );
-        });
-
-        var addBoardDefault = document.getElementById('addDefault');
-        addBoardDefault.addEventListener('click', function() {
-            kanban.addBoards(
-                [{
-                    'id': '_default',
-                    'title': 'New Board',
-                    'class': 'primary-light',
-                    'item': [{
-                            'title': `
-                                <div class="d-flex align-items-center">
-                                    <div class="symbol symbol-success mr-3">
-                                        <img alt="Pic" src="assets/media/users/300_13.jpg" />
-                                    </div>
-                                    <div class="d-flex flex-column align-items-start">
-                                        <span class="text-dark-50 font-weight-bold mb-1">Payment Modules</span>
-                                        <span class="label label-inline label-light-primary font-weight-bold">In development</span>
-                                    </div>
-                                </div>
-                        `},{
-                            'title': `
-                                <div class="d-flex align-items-center">
-                                    <div class="symbol symbol-success mr-3">
-                                        <img alt="Pic" src="assets/media/users/300_12.jpg" />
-                                    </div>
-                                    <div class="d-flex flex-column align-items-start">
-                                    <span class="text-dark-50 font-weight-bold mb-1">New Project</span>
-                                    <span class="label label-inline label-light-danger font-weight-bold">Pending</span>
-                                </div>
-                            </div>
-                        `}
-                    ]
-                }]
-            )
-        });
-
-        var removeBoard = document.getElementById('removeBoard');
-        removeBoard.addEventListener('click', function() {
-            kanban.removeBoard('_done');
-        });
-    }
-
-    // Public functions
-    return {
-        init: function() {
-            _demo1();
-            _demo2();
-            _demo3();
-            _demo4();
-        }
-    };
-}();
-
-jQuery(document).ready(function() {
-    KTKanbanBoardDemo.init();
-});
-
-/******/ })()
-;
-//# sourceMappingURL=kanban-board.js.map

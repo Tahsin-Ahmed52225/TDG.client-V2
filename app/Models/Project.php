@@ -8,7 +8,7 @@ class Project extends Model
 {
     protected $table = 'project';
     protected $fillable = [
-        'title', 'created_by','due_date','status','priority','description','type',
+        'title', 'created_by','due_date','status','priority','description','type','order'
     ];
 
     public function creator()

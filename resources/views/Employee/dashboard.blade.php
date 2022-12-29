@@ -21,7 +21,7 @@
                                 <h3 class="card-title font-weight-bolder text-dark">
                                   My  Tasks</h3>
                                 <div class="card-toolbar">
-                                    <a href="#"
+                                    <a href="{{ route('employee.taskboard') }}"
                                         class="btn btn-light btn-sm font-size-sm font-weight-bolder  text-dark-75">
                                         <i class="fas fa-forward"></i> View Board</a>
                                 </div>

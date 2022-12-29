@@ -91,7 +91,7 @@
         </div>
     </div>
 </div>
-
+ @include("Common.partials.delete_modal")
  @endsection
 
 
@@ -330,4 +330,12 @@
     })
   </script>
   <script src="{{ asset('dev-assets/js/project/subtask.js') }}"></script>
+  <script>
+    $(document).ready( function () {
+        $(".delete_btn").on("click",(e)=>{
+            console.log($(e.target).attr("data-id"));
+           $("#delete_data_form").attr("action",`./delete-project/`+$(e.target).attr("data-id"))
+        });
+    });
+ </script>
  @endsection

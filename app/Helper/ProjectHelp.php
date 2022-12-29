@@ -17,5 +17,22 @@ class ProjectHelp
         $totalTasks =  count(ProjectSubtask::where('project_id',$project_id)->get());
         return round(($completedTask / $totalTasks) * 100, 2);
     }
+    public static function taskformat($tasks,$status){
+        $data = [];
+        foreach($tasks->where("status",$status) as $ele){
+            $data[] = [
+                'title' => '<span class="font-weight-bold" data-id='.$ele->id.' data-toggle="modal" data-target="#viewSubtask">'.$ele->title.'</span>',
+                'class' => 'bg-white',
+            ];
+        }
+        return $data;
+    }
+    public static function taskReorder($order){
+            foreach( $order as $key=>$value ){
+               $task =  ProjectSubtask::find($value);
+               $task->order = $key+1;
+               $task->save();
+            }
+    }
 
 }

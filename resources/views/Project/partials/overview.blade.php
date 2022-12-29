@@ -42,10 +42,11 @@
                                                             </a>
                                                         </li>
                                                         <li class="navi-item">
-                                                            <a href="#" class="navi-link">
-                                                                <span class="navi-text">
-                                                                    <span
-                                                                        class="label label-xl label-inline label-light-danger">Delete Project</span>
+                                                            <a href="#" data-id={{ $project->id }} data-toggle="modal" data-target="#delete_modal" class="navi-link delete_btn" >
+                                                                <span class="navi-text" data-id={{ $project->id }}>
+                                                                    <span class="label label-xl label-inline label-light-danger" data-id={{ $project->id }}>
+                                                                        Delete Project
+                                                                    </span>
                                                                 </span>
                                                             </a>
                                                         </li>
