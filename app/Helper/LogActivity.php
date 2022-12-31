@@ -2,6 +2,7 @@
 
 
 namespace App\Helper;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
 
 
@@ -15,7 +16,7 @@ class LogActivity
     {
     	$log = [];
     	$log['log_details'] = $message;
-    	$log['user_id'] = auth()->user()->id;
+    	$log['user_id'] = Auth::user()->id;
     	Log::create($log);
     }
     /**

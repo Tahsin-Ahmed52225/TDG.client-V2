@@ -200,7 +200,10 @@ class SingleProjectController extends Controller
             if ($validator->fails()) {
                 return response()->json(['data' => $validator]);
             }else{
-                $order  = count(ProjectSubtask::where('status','todo')->get())+1;
+
+
+
+
                 $subtask = ProjectSubtask::create([
                     'title' => $data['title'],
                     'description' => $data['description'],
@@ -208,7 +211,15 @@ class SingleProjectController extends Controller
                     'due_date' => $data['due_date'],
                     'project_id' => $id,
                 ]);
-                $subtask->order = $order;
+                $allOtherTask = ProjectSubtask::where('status','todo')->where('id','!=',$subtask->id)->get();
+                if(count($allOtherTask) != 0){
+                    $temp = 2;
+                    foreach($allOtherTask as $task){
+                            $task->order = $temp;
+                            $temp++;
+                    }
+                }
+                $subtask->order = 1;
                 $subtask->save();
                 if($subtask){
                     foreach($data['assigned_member'] as $member){
@@ -265,10 +276,11 @@ class SingleProjectController extends Controller
     }
     public function getSubtask(Request $request, $task_id){
         if($request->ajax()){
-            $task = ProjectSubtask::find($task_id);
+            $task = ProjectSubtask::where('id',$task_id)->with('project')->first();
             $assigned_member = ProjectSubtask::where('project_subtask.id',$task_id)
                     ->join('project_subtask_user_assign','project_subtask_user_assign.project_subtask_id','project_subtask.id')
-                    ->pluck('project_subtask_user_assign.user_id')->toArray();
+                    ->join('users','users.id','project_subtask_user_assign.user_id')
+                    ->pluck('users.name')->toArray();
             if($task){
                 return response()->json(['data' => $task,'assigned_member'=> $assigned_member, 'msg'=>'Success']);
             }else{

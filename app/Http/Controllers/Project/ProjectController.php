@@ -118,7 +118,7 @@ class ProjectController extends Controller
     {
         $project = Project::find($id);
         #tasks
-        $tasks = ProjectSubtask::where("project_id", $project->id)->orderBy('created_at', 'DESC')->get();
+        $tasks = ProjectSubtask::where("project_id", $project->id)->orderBy('due_date', 'DESC')->get();
         $completedTask = count(ProjectSubtask::where("project_id", $project->id)->where('complete',1)->get());
         if($request->ajax()){
             return Datatables::of($tasks)
@@ -138,13 +138,15 @@ class ProjectController extends Controller
             }, 3)
             ->editColumn('title', function(ProjectSubtask $value) {
                 $style = ($value->complete == 1) ? 'line-through' : '';
+                $badge = '<br><span class="badge badge-dark mr-2 mt-2">'.'Project: '.$value->project->title.'</span>';
                 if($value->priority == "low"){
-                    $badge = '<span class="badge badge-pill badge-primary">'.$value->priority.'</span>';
+                    $badge = $badge.'<span class="badge badge-primary mr-2">'.$value->priority.'</span>';
                 }else if($value->priority == "medium"){
-                    $badge = '<span class="badge badge-pill badge-warning">'.$value->priority.'</span>';
+                    $badge = $badge.'<span class="badge badge-warning mr-2">'.$value->priority.'</span>';
                 }else{
-                    $badge = '<span class="badge badge-pill badge-danger">'.$value->priority.'</span>';
+                    $badge = $badge.'<span class="badge badge-danger mr-2">'.$value->priority.'</span>';
                 }
+                $badge = $badge.'<span class="badge badge-info">'.$value->status.'</span>';
                 return '<span data-id='.$value->id.' class="project-title mr-2" style="cursor: pointer;text-decoration:'.$style.'" data-toggle="modal" data-target="#viewSubtask">' . $value->title . '</span>'. $badge;
             })
             ->editColumn('due_date', function(ProjectSubtask $value) {

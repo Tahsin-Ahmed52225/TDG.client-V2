@@ -12,6 +12,6 @@ Route::post('/delete-role/{id}', 'SystemController@roleDelete')->name("roles_del
 # User permissions settings
 Route::match(['get', 'post'], '/permissions/{id}','SystemController@permission')->name('permissions');
 # System log
-Route::get('/system-log', 'SystemController@log')->name("log");
-Route::post('/delete-system-log/{id}', 'SystemController@logDelete')->name("log_delete");
-Route::post('/delete-log-all/', 'SystemController@logAllDelete')->name("log_delete_all");
+Route::get('/log', 'SystemController@log')->name("log");
+Route::post('/delete-log/{id}', 'SystemController@logDelete')->name("log_delete");
+Route::post('/delete-log-all', 'SystemController@logAllDelete')->name("log_delete_all");

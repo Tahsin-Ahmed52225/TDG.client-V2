@@ -25,7 +25,7 @@ class TaskBoardController extends Controller
             $complete = ProjectHelp::taskformat($tasks, 'complete');
             return response()->json(['todo'=>$todo,'hold'=>$hold,'working'=>$working,'complete'=>$complete]);
         }
-        return view('Employee.taskboard');
+        return view('Project.taskboard');
     }
     public function changeStatus(Request $request){
         if($request->ajax()){

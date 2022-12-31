@@ -3,6 +3,7 @@
 <link href="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <link rel="stylesheet" href="{{ asset('dev-assets/css/tooltip.css') }}">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section("content")
@@ -17,15 +18,18 @@
                         <!--begin::Header-->
                         <div class="card-header border-0 ">
                             <h3 class="card-title font-weight-bolder text-dark">View Log</h3>
+                            <div class="card-toolbar" data-toggle="modal" data-target="#delete_modal_ajax">
+                                <a href="#"
+                                    class="btn btn-danger btn-sm font-size-sm font-weight-bolder  text-white-75">
+                                    <i class="fas fa-trash" style="font-size:13px"></i>Delete All Log</a>
+                            </div>
                         </div>
+
                         <!--end::Header-->
                         <!--begin::Body-->
                         <div class="card-body" id="task_board">
                             <table class="table table-striped data-table">
                                 <thead>
-                                        <th>
-                                            #
-                                        </th>
                                         <th>
                                            Action User
                                         </th>
@@ -52,6 +56,8 @@
         </div>
     </div>
 </div>
+
+@include('Common.partials.delete_model_ajax')
 @endsection
 
 
@@ -63,50 +69,65 @@
     {{-- Yajra datatbale intialization  --}}
     <script type="text/javascript">
         $(function () {
-
+          console.log("HI");
           var table = $('.data-table').DataTable({
               processing: true,
               serverSide: true,
-              ajax: "{{ route('system.log') }}",
+              ajax: "{{ route('settings.log') }}",
               columns: [
                   {data: 'user_id', name: 'user_id'},
                   {data: 'log_details', name: 'log_details'},
                   {data: 'created_at', name: 'created_at'},
                   {data: 'action', name: 'action', orderable: false, searchable: false},
               ],
-            //   "drawCallback": function() {
-            //         $(".project-title").on("click",function (e) {
-            //             var task_id = $(e.target).attr('data-id');
-            //             var URL = "{{ route('project.get_subtask', -1) }}";
-            //             URL = URL.replace('-1', task_id);
-            //             viewTask(URL);
-            //         });
-            //         $(".task_checkbox").change(function (e) {
-            //             var URL = '{{ route("project.task_complete_toggle") }}'
-            //             taskCompleteToggler(e , URL);
-            //         });
-            //         $(".delete_btn").on("click",(e)=>{
-            //             var task_id = $(e.target).attr('data-id');
-            //             $('#deleteTaskBtn').off().on("click",()=>{
-            //                 var URL = "{{ route('project.delete_subtask', -1) }}";
-            //                 URL = URL.replace('-1', task_id);
-            //                 taskDelete(URL);
-            //             })
-            //         })
-            //         $(".edit_btn").on("click",(e)=>{
-            //             var task_id = $(e.target).attr('data-id');
-            //             var URL = "{{ route('project.get_subtask', -1) }}";
-            //             URL = URL.replace('-1', task_id);
-            //             getTaskData(URL);
-            //             $('#editUpdateBtn').off().on("click",()=>{
-            //                 var URL = "{{ route('project.update_subtask', -1) }}";
-            //                 URL = URL.replace('-1', task_id);
-            //                 updateTaskData(URL);
-            //             });
-            //         })
+              "drawCallback": function() {
+                    $(".delete_btn").on("click",(e)=>{
+                        var log_id = $(e.target).attr('data-id');
+                        $('#sureDeleteBtn').off().on("click",()=>{
+                            URL =  `{{route('settings.log_delete' , '-1')}}`
+                            URL = URL.replace('-1', log_id);
+                            $.ajax({
+                                    url: URL,
+                                    type: "POST",
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    success: function (data) {
+                                        console.log(data);
+                                        if(data.msg == 'success'){
+                                            $('.data-table').DataTable().ajax.reload();
+                                            toastr.success("Log deleted successfully");
+                                            $('#delete_modal_ajax').modal('toggle');
+                                        }else{
+                                            toastr.warning("Something went wrong.");
+                                        }
 
-            //   }
+                                    },
+                                    error: function (xhr, exception) {
+                                        var msg = "";
+                                        if (xhr.status === 0) {
+                                            msg = "Not connect.\n Verify Network." + xhr.responseText;
+                                        } else if (xhr.status == 404) {
+                                            msg = "Requested page not found. [404]" + xhr.responseText;
+                                        } else if (xhr.status == 500) {
+                                            msg = "Internal Server Error [500]." +  xhr.responseText;
+                                        } else if (exception === "parsererror") {
+                                            msg = "Requested JSON parse failed.";
+                                        } else if (exception === "timeout") {
+                                            msg = "Time out error." + xhr.responseText;
+                                        } else if (exception === "abort") {
+                                            msg = "Ajax request aborted.";
+                                        } else {
+                                            msg = "Error:" + xhr.status + " " + xhr.responseText;
+                                        }
+
+                                    }
+                            });
+                        })
+                    })
+              }
           });
 
         });
+    </script>
 @endsection

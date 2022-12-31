@@ -482,9 +482,9 @@
                     <div class="navi navi-icon-circle navi-spacer-x-0">
                         <!--begin::Item-->
                         <div class="bg-white" style="position: sticky; top:0px; padding:10px">
-                            <button class="btn btn-sm btn-primary position-sticky" style="width: 100%">
+                            <a href="{{ route('settings.log') }}" class="btn btn-sm btn-primary position-sticky" style="width: 100%">
                                 View Log
-                           </button>
+                           </a>
                         </div>
                         @foreach ($contents  as $ele)
                             <a href="#" class="navi-item">

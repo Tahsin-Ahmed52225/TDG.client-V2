@@ -132,9 +132,10 @@
             type: 'GET',
             url: URL,
                 success: function (data) {
+                    console.log(data);
                     if(data.msg = "success"){
-                        console.log(data);
                         $("#subtask_title").text(data.data.title);
+                        $('#task_project').html(`Project: `+data.data.project.title);
                         $("#subtask_title").css('text-decoration', (data.data.complete == 0)? 'none' : 'line-through');
                         $("#task_details").text(data.data.description);
                         if(data.data.priority == 'low'){
@@ -152,7 +153,15 @@
                             $("#task_priority").addClass('badge-warning');
                         }
                         $("#task_priority").text(`Priority: `+ data.data.priority);
+                        $("#task_status").text(`Priority: `+ data.data.status);
                         $("#due_date").text(`Due Date: `+ data.data.due_date.slice(0, 10));
+                        var members = 'Members :'
+                        data.assigned_member.forEach(function(value) {
+                             members =  members+`<span class="tool" data-tip="`+value+`">
+                                                   <i style="font-size: 25px;" class="far fa-user-circle"></i>
+                                                </span>`
+                        });
+                        $('.modal-footer').html(members);
                     }else{
                         toastr.error(data.msg);
                     }

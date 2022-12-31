@@ -99,7 +99,8 @@ class SystemController extends Controller
         }
     }
     public function log(Request $request){
-       $allLog = Log::orderBy('created_at', 'DESC')->get();
+       $allLog = Log::orderBy('created_at', 'ASC')->get();
+       //dd($allLog);
        if($request->ajax()){
             return Datatables::of($allLog)
             ->editColumn('user_id', function(Log $value) {
@@ -111,12 +112,12 @@ class SystemController extends Controller
             })
             ->removeColumn('updated_at')
             ->addColumn('action', function(Log $value){
-                $btn ='<button data-id='.$value->id.' class="btn delete_btn" style="border:1px solid rgb(219, 219, 219); padding-right: .5rem;" data-toggle="modal" data-target="#deleteTask">'
+                $btn ='<button data-id='.$value->id.' class="btn delete_btn" style="border:1px solid rgb(219, 219, 219); padding-right: .5rem;" data-toggle="modal" data-target="#delete_modal_ajax">'
                         .'<i data-id='.$value->id.' class="fas fa-trash-alt text-danger"></i>'
                     .'</button>';
                     return $btn;
             })
-            ->rawColumns(['action','user_id','created_at'])
+            ->rawColumns(['user_id','created_at','action'])
             ->make(true);
        }
        return view('Settings.log');

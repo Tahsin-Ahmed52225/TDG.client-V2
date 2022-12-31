@@ -23,6 +23,7 @@ class DashboardController extends Controller
         $userAssigned = User::where('id','!=', 1)->get();
         $tasks = ProjectSubtask::join('project_subtask_user_assign','project_subtask_user_assign.project_subtask_id','project_subtask.id')
                                 ->where('project_subtask_user_assign.user_id', Auth::user()->id)
+                                ->orderBy('project_subtask.due_date', 'asc')
                                 ->get(['project_subtask.id', 'project_subtask.complete','project_subtask.priority','project_subtask.due_date','project_subtask.title','project_subtask.description','project_subtask.status','project_subtask.project_id']);
         //dd($tasks);
         if($request->ajax()){
@@ -43,16 +44,15 @@ class DashboardController extends Controller
             }, 3)
             ->editColumn('title', function(ProjectSubtask $value) {
                 $style = ($value->complete == 1) ? 'line-through' : '';
+                $badge = '<br><span class="badge badge-dark mr-2 mt-2">'.'Project: '.$value->project->title.'</span>';
                 if($value->priority == "low"){
-                    $badge = '<span class="badge badge-pill badge-primary mr-2">'.$value->priority.'</span>';
-                    $badge = $badge.'<span class="badge badge-dark">'.$value->status.'</span>';
+                    $badge = $badge.'<span class="badge badge-primary mr-2">'.$value->priority.'</span>';
                 }else if($value->priority == "medium"){
-                    $badge = '<span class="badge badge-pill badge-warning mr-2">'.$value->priority.'</span>';
-                    $badge = $badge.'<span class="badge badge-dark">'.$value->status.'</span>';
+                    $badge = $badge.'<span class="badge badge-warning mr-2">'.$value->priority.'</span>';
                 }else{
-                    $badge = '<span class="badge badge-pill badge-danger mr-2">'.$value->priority.'</span>';
-                    $badge = $badge.'<span class="badge  badge-dark">'.$value->status.'</span>';
+                    $badge = $badge.'<span class="badge badge-danger mr-2">'.$value->priority.'</span>';
                 }
+                $badge = $badge.'<span class="badge badge-info">'.$value->status.'</span>';
                 return '<span data-id='.$value->id.' class="project-title mr-2" style="cursor: pointer;text-decoration:'.$style.'" data-toggle="modal" data-target="#viewSubtask">' . $value->title . '</span>'. $badge;
             })
             ->editColumn('due_date', function(ProjectSubtask $value) {

@@ -22,7 +22,7 @@ class DashboardController extends Controller
     {
         if($request->isMethod("GET")){
             $userAssigned = User::where('id','!=', 1)->get();
-            $tasks = ProjectSubtask::where("project_id", 1)->orderBy('created_at', 'DESC')->get();
+            $tasks = ProjectSubtask::where("project_id", 1)->orderBy('due_date', 'DESC')->get();
             if($request->ajax()){
                 return Datatables::of($tasks)
                 ->addColumn('checkbox', function(ProjectSubtask $value) {
@@ -41,13 +41,15 @@ class DashboardController extends Controller
                 }, 3)
                 ->editColumn('title', function(ProjectSubtask $value) {
                     $style = ($value->complete == 1) ? 'line-through' : '';
+                    $badge = '<br><span class="badge badge-dark mr-2 mt-2">'.'Project: '.$value->project->title.'</span>';
                     if($value->priority == "low"){
-                        $badge = '<span class="badge badge-pill badge-primary">'.$value->priority.'</span>';
+                        $badge = $badge.'<span class="badge badge-primary mr-2">'.$value->priority.'</span>';
                     }else if($value->priority == "medium"){
-                        $badge = '<span class="badge badge-pill badge-warning">'.$value->priority.'</span>';
+                        $badge = $badge.'<span class="badge badge-warning mr-2">'.$value->priority.'</span>';
                     }else{
-                        $badge = '<span class="badge badge-pill badge-danger">'.$value->priority.'</span>';
+                        $badge = $badge.'<span class="badge badge-danger mr-2">'.$value->priority.'</span>';
                     }
+                    $badge = $badge.'<span class="badge badge-info">'.$value->status.'</span>';
                     return '<span data-id='.$value->id.' class="project-title mr-2" style="cursor: pointer;text-decoration:'.$style.'" data-toggle="modal" data-target="#viewSubtask">' . $value->title . '</span>'. $badge;
                 })
                 ->editColumn('due_date', function(ProjectSubtask $value) {
