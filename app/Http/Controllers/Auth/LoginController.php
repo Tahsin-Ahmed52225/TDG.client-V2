@@ -32,17 +32,11 @@ class LoginController extends Controller
                     ->withInput();
             } else {
                 if (Auth::attempt(['email' =>  $request->email, 'password' => $request->password])) {
-                    if (Auth::user()->email_verified == 0) {
-                        Auth::logout();
-                        return redirect()->back()->with(session()->flash('alert-warning', 'Please verify your account'));
+                    if (Auth::user()->stage == 1) {
+                         return redirect('/'.Auth::user()->role->slug.'/dashboard');
                     } else {
-
-                            if (Auth::user()->stage == 1) {
-                                return redirect('/'.Auth::user()->role->slug.'/dashboard');
-                            } else {
-                                Auth::logout();
-                                return redirect()->back()->with(session()->flash('alert-warning', 'Your account has been locked !'));
-                            }
+                        Auth::logout();
+                        return redirect()->back()->with(session()->flash('alert-warning', 'Your account has been locked !'));
                     }
                 } else {
                     return redirect()->back()->with(session()->flash('alert-danger', 'Incorract Credentials'));

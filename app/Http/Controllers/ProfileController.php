@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\LogActivity;
 use Illuminate\Http\Request;
+use App\Rules\PhoneNumber;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
-// Custom Model 
+// Custom Model
 use App\Models\User;
 
 class ProfileController extends Controller
@@ -33,17 +36,31 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         if($request->isMethod("GET")){
-
             return view('common.edit_profile', ['user' => $user]);
         }else if($request->isMethod("POST")){
-        $user = User::find(auth()->user()->id);
-            if($request->userName == "" || $request->userNumber = ""){
-                return redirect()->back()->with('warning', "Field cann't be blank");
+            $user = User::find(auth()->user()->id);
+            $data['name'] = $request->userName;
+            $data['email'] = (isset($request->adminEmail)) ? $request->adminEmail : $user->email; ;
+            $data['phone'] = $request->userNumber;
+            $validator = Validator::make($data, [
+                'name' => ['required', 'string', 'max:255'],
+                'phone' => ['required', new PhoneNumber],
+            ]);
+            if(Auth::user()->email !=  $data['email']){
+                $validator = Validator::make($data, [
+                    'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+                ]);
+            }
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)
+                ->withInput();
             }else{
-                $user->name = $request->userName;
-                $user->phone = $request->userNumber;
+                $user->name = $data['name'];
+                $user->email = $data['email'];
+                $user->phone = $data['phone'];
                 $user->save();
-                return redirect()->back()->with('success', "Profile updated");
+                LogActivity::addToLog($user->name." updated profile info");
+                return redirect()->back()->with(session()->flash('alert-success', 'Profile successfully updated'));
             }
         }
     }
@@ -52,22 +69,35 @@ class ProfileController extends Controller
         if($request->isMethod("GET")){
             return view('common.change_password', ['user' => $user]);
         }else{
-            $user->password = Hash::make($request->userPassword);
-            $user->save();
-            return redirect()->back()->with('success', "Password Changed");
+            $data['password'] = $request->userPassword;
+            $validator = Validator::make($data, [
+                'password' => ['required', 'string', 'min:6'],
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)
+                ->withInput();
+            }else{
+                $user->password = Hash::make($request->userPassword);
+                $user->save();
+                LogActivity::addToLog($user->name." changed password");
+                return redirect()->back()->with(session()->flash('alert-success', 'Password successfully changed'));
+            }
         }
     }
     public function changeProfilePic(Request $request){
-            if($request->isMethod("POST")){
-                if ($request->file("profile_avatar")) {
-                    $file = $request->file("profile_avatar");
-                    $fileName =  preg_replace("/\h*/", "_", $file->getClientOriginalName());
-                    $file->move("files/profile_pics", $fileName);
-                    $user = Auth::user();
-                    $user->image = $fileName;
-                    $user->save();
-                    return redirect()->route("edit_profile")->with("success", "Profile Updated Succesfully");
+        if($request->isMethod("POST")){
+            if ($request->file("profile_avatar")) {
+                $file = $request->file("profile_avatar");
+                $fileName =  preg_replace("/\h*/", "_", $file->getClientOriginalName());
+                $file->move("files/profile_pics", $fileName);
+                $user = Auth::user();
+                $user->image = $fileName;
+                $user->save();
+                LogActivity::addToLog($user->name." changed profile picture");
+                return redirect()->back()->with(session()->flash('alert-success', 'Image uploaded successfully updated'));
 
+            }else{
+                return redirect()->back()->with(session()->flash('alert-warning', 'Choose a image to upload'));
             }
         }
     }

@@ -24,14 +24,14 @@ class LogActivity
      */
     public static function allLog()
     {
-    	return Log::latest()->get();
+    	return Log::latest()->take(20)->get();
     }
     /**
      * Getting indiviudal log
      */
     public static function showlog($user_id)
     {
-        return log::where('user_id', $user_id)->get(['*']);
+        return log::where('user_id', $user_id)->take(20)->get();
     }
 
 

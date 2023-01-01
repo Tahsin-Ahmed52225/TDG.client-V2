@@ -26,7 +26,7 @@
                             </div>
                             <div class="pt-2">
                                 <a href="#" class="font-weight-bolder font-size-h5 text-dark-75 text-hover-primary">{{ $user->name }}</a>
-                                <div class="text-muted">{{  Str::ucfirst($user->role) }}</div>
+                                <div class="text-muted">{{  Str::ucfirst($user->role->title) }}</div>
                             </div>
                             <!--end::User-->
                             <!--begin::Contact-->
@@ -37,7 +37,7 @@
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="font-weight-bold mr-2">Phone:</span>
-                                    <span class="text-muted">{{ empty($user->number) ? '-' : $user->number }}</span>
+                                    <span class="text-muted">{{ empty($user->phone) ? '-' : $user->phone }}</span>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <span class="font-weight-bold mr-2">Joined :</span>
@@ -123,7 +123,7 @@
                                                     <i class="la la-phone"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->number }}" disabled />
+                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->phone }}" disabled />
                                         </div>
                                     </div>
                                  </div>
@@ -132,7 +132,7 @@
                                     <label class="col-xl-3 col-lg-3 col-form-label">Position </label>
                                     <div class="col-lg-9 col-xl-6">
                                         <div class="input-group input-group-lg input-group-solid">
-                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->position }}" disabled />
+                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->position->title }}" disabled />
                                         </div>
                                     </div>
                                  </div>

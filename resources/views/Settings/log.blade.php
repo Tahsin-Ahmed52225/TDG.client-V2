@@ -1,4 +1,4 @@
-@extends((Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager") ? 'layouts.'.Auth::user()->role->slug : 'loayouts.employee')
+@extends((Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager") ? 'layouts.'.Auth::user()->role->slug : 'layouts.employee')
 @section("links")
 <link href="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
@@ -18,10 +18,11 @@
                         <!--begin::Header-->
                         <div class="card-header border-0 ">
                             <h3 class="card-title font-weight-bolder text-dark">View Log</h3>
-                            <div class="card-toolbar" data-toggle="modal" data-target="#delete_modal_ajax">
-                                <a href="#"
+                            <div class="card-toolbar">
+                                <a href="#" id="delete_all_btn"
                                     class="btn btn-danger btn-sm font-size-sm font-weight-bolder  text-white-75">
-                                    <i class="fas fa-trash" style="font-size:13px"></i>Delete All Log</a>
+                                    <i class="fas fa-trash" style="font-size:13px"></i>Delete All Log
+                                </a>
                             </div>
                         </div>
 
@@ -69,7 +70,6 @@
     {{-- Yajra datatbale intialization  --}}
     <script type="text/javascript">
         $(function () {
-          console.log("HI");
           var table = $('.data-table').DataTable({
               processing: true,
               serverSide: true,
@@ -81,7 +81,53 @@
                   {data: 'action', name: 'action', orderable: false, searchable: false},
               ],
               "drawCallback": function() {
+                $("#delete_all_btn").on("click",(e)=>{
+                        $('#modalText').text('Are you sure you want to delete all log records')
+                        $('#delete_modal_ajax').modal('toggle');
+                        $('#sureDeleteBtn').off().on("click",()=>{
+                            URL =  `{{route('settings.log_delete_all')}}`
+                            $.ajax({
+                                    url: URL,
+                                    type: "POST",
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    success: function (data) {
+                                        console.log(data);
+                                        if(data.msg == 'success'){
+                                            $('.data-table').DataTable().ajax.reload();
+                                            toastr.success("Log Cleared Successfully");
+                                            $('#delete_modal_ajax').modal('toggle');
+                                        }else{
+                                            toastr.warning("Something went wrong.");
+                                        }
+
+                                    },
+                                    error: function (xhr, exception) {
+                                        var msg = "";
+                                        if (xhr.status === 0) {
+                                            msg = "Not connect.\n Verify Network." + xhr.responseText;
+                                        } else if (xhr.status == 404) {
+                                            msg = "Requested page not found. [404]" + xhr.responseText;
+                                        } else if (xhr.status == 500) {
+                                            msg = "Internal Server Error [500]." +  xhr.responseText;
+                                        } else if (exception === "parsererror") {
+                                            msg = "Requested JSON parse failed.";
+                                        } else if (exception === "timeout") {
+                                            msg = "Time out error." + xhr.responseText;
+                                        } else if (exception === "abort") {
+                                            msg = "Ajax request aborted.";
+                                        } else {
+                                            msg = "Error:" + xhr.status + " " + xhr.responseText;
+                                        }
+
+                                    }
+                            });
+                        })
+                    })
                     $(".delete_btn").on("click",(e)=>{
+                        $('#modalText').text('Are you sure you want to delete this log record?')
+                        $('#delete_modal_ajax').modal('toggle');
                         var log_id = $(e.target).attr('data-id');
                         $('#sureDeleteBtn').off().on("click",()=>{
                             URL =  `{{route('settings.log_delete' , '-1')}}`
@@ -93,7 +139,6 @@
                                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                     },
                                     success: function (data) {
-                                        console.log(data);
                                         if(data.msg == 'success'){
                                             $('.data-table').DataTable().ajax.reload();
                                             toastr.success("Log deleted successfully");

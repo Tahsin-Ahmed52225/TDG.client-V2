@@ -8,6 +8,7 @@ use DataTables;
 
 # Custom models
 use App\Models\User;
+use App\Models\Project;
 use App\Models\ProjectSubtask;
 use App\Models\ProjectSubtaskAssigns;
 
@@ -21,6 +22,17 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         if($request->isMethod("GET")){
+            #Handling the card info
+            # User Info
+            $Employees['total'] = count(User::where('role_id','!=',1)->get());
+            $Employees['active'] = count(User::where('role_id','!=',1)->where('stage',1)->get());
+            $Employees['locked'] = count(User::where('role_id','!=',0)->where('stage',1)->get());
+            # Project Info
+            $Projects['total'] = count(Project::where('id','!=',1)->get());
+            $Projects['running'] = count(Project::where('id','!=',1)->where('status','running')->get());
+            $Projects['hold'] = count(Project::where('id','!=',1)->where('status','stopped')->get());
+            $Projects['complete'] = count(Project::where('id','!=',1)->where('status','complete')->get());
+            #Global Tasks table
             $userAssigned = User::where('id','!=', 1)->get();
             $tasks = ProjectSubtask::where("project_id", 1)->orderBy('due_date', 'DESC')->get();
             if($request->ajax()){
@@ -73,7 +85,7 @@ class DashboardController extends Controller
                 ->make(true);
 
             }
-            return view("Admin.dashboard", ['userAssigned' => $userAssigned]);
+            return view("Admin.dashboard", ['userAssigned' => $userAssigned , 'employees' => $Employees , 'projects' => $Projects]);
         }else{
 
         }

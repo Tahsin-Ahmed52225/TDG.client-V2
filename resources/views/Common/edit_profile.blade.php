@@ -1,4 +1,4 @@
-@extends("layouts.".Auth::user()->role)
+@extends((Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager") ? 'layouts.'.Auth::user()->role->slug : 'layouts.employee')
 @section("links")
 <!--begin::Page Vendors Styles(used by this page)-->
 <link href="{{ asset("assets/plugins/custom/fullcalendar/fullcalendar.bundle.css") }}" rel="stylesheet" type="text/css" />
@@ -13,42 +13,29 @@
         <!--begin::Container-->
         <div class="container" >
             <!--begin::Profile Account Information-->
-            @if (session()->has('success'))
-                    <div class="alert alert-custom alert-light-success fade show mb-5 d-flex py-2" role="alert">
-                        <div class="alert-icon"><i class="flaticon2-check-mark"></i></div>
-                        <div class="alert-text">{{ session()->get('success') }}
-                        </div>
-                        <div class="alert-close">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true"><i class="ki ki-close"></i></span>
-                            </button>
-                        </div>
+            @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger">
+                        {{ $error }}
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        @if ($errors->has('email'))
+                        @endif
                     </div>
+                @endforeach
+            @endif
+
+            @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                @if (Session::has('alert-' . $msg))
+                    @if ($msg == 'success')
+                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }}
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        </p>
+                    @else
+                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#"
+                                class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+                    @endif
                 @endif
-                @if (session()->has('rejected'))
-                    <div class="alert alert-custom alert-light-danger fade show mb-5 d-flex py-2" role="alert">
-                        <div class="alert-icon"><i class="flaticon2-check-mark"></i></div>
-                        <div class="alert-text">{{ session()->get('rejected') }}
-                        </div>
-                        <div class="alert-close">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true"><i class="ki ki-close"></i></span>
-                            </button>
-                        </div>
-                    </div>
-                @endif
-                @if (session()->has('warning'))
-                    <div class="alert alert-custom alert-light-warning fade show mb-5 d-flex py-2" role="alert">
-                        <div class="alert-icon"><i class="flaticon-danger"></i></div>
-                        <div class="alert-text">{{ session()->get('warning') }}
-                        </div>
-                        <div class="alert-close">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true"><i class="ki ki-close"></i></span>
-                            </button>
-                        </div>
-                    </div>
-                @endif
+            @endforeach
             <div class="row ">
 
                 <div class="col-md-4 col-sm-12 ">
@@ -80,7 +67,7 @@
                             </div>
                             <div class="pt-2">
                                 <a href="#" class="font-weight-bolder font-size-h5 text-dark-75 text-hover-primary">{{ $user->name }}</a>
-                                <div class="text-muted">{{  Str::ucfirst($user->role) }}</div>
+                                <div class="text-muted">{{  Str::ucfirst($user->role->title) }}</div>
                             </div>
                             <!--end::User-->
                             <!--begin::Contact-->
@@ -91,7 +78,7 @@
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="font-weight-bold mr-2">Phone:</span>
-                                    <span class="text-muted">{{ empty($user->number) ? '-' : $user->number }}</span>
+                                    <span class="text-muted">{{ empty($user->phone) ? '-' : $user->phone }}</span>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <span class="font-weight-bold mr-2">Joined :</span>
@@ -164,7 +151,14 @@
                                                     <i class="la la-at"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->email }}" disabled />
+                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->email }}"
+
+                                            @if(Auth::user()->role->title != 'Admin')
+                                                disabled
+                                            @else
+                                                name="adminEmail"
+                                            @endif
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -178,7 +172,7 @@
                                                     <i class="la la-phone"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->number }}"  name="userNumber"/>
+                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->phone }}"  name="userNumber"/>
                                         </div>
                                     </div>
                                  </div>
@@ -187,7 +181,7 @@
                                     <label class="col-xl-3 col-lg-3 col-form-label">Position </label>
                                     <div class="col-lg-9 col-xl-6">
                                         <div class="input-group input-group-lg input-group-solid">
-                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->position }}" disabled  />
+                                            <input type="text" class="form-control form-control-lg form-control-solid" value="{{ $user->position->title }}" disabled  />
                                         </div>
                                     </div>
                                  </div>

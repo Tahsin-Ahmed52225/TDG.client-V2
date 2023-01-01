@@ -24,13 +24,21 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request , $stage = null)
     {
-        if(Auth::user()->role->title){
-            $projects = Project::where('id','!=',1)->get();
-            return view('project.index',compact('projects'));
+        if($request->isMethod("GET")){
+            if($stage == 'complete'){
+                $projects = Project::where('id','!=',1)->where('status','complete')->get();
+            }else if($stage == 'running'){
+                $projects = Project::where('id','!=',1)->where('status','running')->get();
+            }else if($stage == 'stopped'){
+                $projects = Project::where('id','!=',1)->where('status','stopped')->get();
+            }else{
+                $projects = Project::where('id','!=',1)->get();
+            }
+            return view('project.index',['projects'=> $projects]);
         }else{
-            dd("Working on it");
+            return redirect()->back()->with(session()->flash('alert-warning', 'Method not allowed'));
         }
     }
 

@@ -68,7 +68,7 @@
             @if (Route::has('login'))
                 <div class="top-right links">
                     @auth
-                        <a href="{{ url('/home') }}">Home</a>
+                        <a href="{{ route((Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager") ? Auth::user()->role->slug.'.dashboard' : 'employee.dashboard') }}">Dashboard</a>
                     @else
                         <a href="{{ route('login') }}">Login</a>
                     @endauth

@@ -1,4 +1,4 @@
-@extends("layouts.".Auth::user()->role)
+@extends((Auth::user()->role->title == "Admin" || Auth::user()->role->title == "Manager") ? 'layouts.'.Auth::user()->role->slug : 'layouts.employee')
 @section("links")
 <!--begin::Page Vendors Styles(used by this page)-->
 <link href="{{ asset("assets/plugins/custom/fullcalendar/fullcalendar.bundle.css") }}" rel="stylesheet" type="text/css" />
@@ -13,42 +13,29 @@
         <!--begin::Container-->
         <div class="container" >
             <!--begin::Profile Account Information-->
-            @if (session()->has('success'))
-                    <div class="alert alert-custom alert-light-success fade show mb-5 d-flex py-2" role="alert">
-                        <div class="alert-icon"><i class="flaticon2-check-mark"></i></div>
-                        <div class="alert-text">{{ session()->get('success') }}
-                        </div>
-                        <div class="alert-close">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true"><i class="ki ki-close"></i></span>
-                            </button>
-                        </div>
+            @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger">
+                        {{ $error }}
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        @if ($errors->has('email'))
+                        @endif
                     </div>
+                @endforeach
+            @endif
+
+            @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                @if (Session::has('alert-' . $msg))
+                    @if ($msg == 'success')
+                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }}
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        </p>
+                    @else
+                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a href="#"
+                                class="close" data-dismiss="alert" aria-label="close">&times;</a></p>
+                    @endif
                 @endif
-                @if (session()->has('rejected'))
-                    <div class="alert alert-custom alert-light-danger fade show mb-5 d-flex py-2" role="alert">
-                        <div class="alert-icon"><i class="flaticon2-check-mark"></i></div>
-                        <div class="alert-text">{{ session()->get('rejected') }}
-                        </div>
-                        <div class="alert-close">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true"><i class="ki ki-close"></i></span>
-                            </button>
-                        </div>
-                    </div>
-                @endif
-                @if (session()->has('warning'))
-                    <div class="alert alert-custom alert-light-warning fade show mb-5 d-flex py-2" role="alert">
-                        <div class="alert-icon"><i class="flaticon-danger"></i></div>
-                        <div class="alert-text">{{ session()->get('warning') }}
-                        </div>
-                        <div class="alert-close">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true"><i class="ki ki-close"></i></span>
-                            </button>
-                        </div>
-                    </div>
-                @endif
+            @endforeach
             <div class="row ">
 
                 <div class="col-md-4 col-sm-12 ">
@@ -58,29 +45,13 @@
                         <div class="card-body">
                             <!--begin::User-->
                             <div>
-                            <form method="POST" id="edit_profile" action="{{ route("change_profile_image") }}" enctype='multipart/form-data'>
-                            @csrf
-                               <div class="image-input image-input-outline" id="kt_image_1" style="background-image: url(assets/media/users/blank.png)">
-                                    <div class="image-input-wrapper" style="background-image: url({{ ($user->image == NULL) ? asset("assets/media/users/blank.png") :  asset("files/profile_pics/".$user->image)}})"></div>
-
-                                    <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="change" data-toggle="tooltip" title="" data-original-title="Change avatar">
-                                        <i class="fa fa-pen icon-sm text-muted"></i>
-                                        <input type="file" name="profile_avatar" accept=".png, .jpg, .jpeg"/>
-                                        <input type="hidden" name="profile_avatar_remove"/>
-                                    </label>
-
-                                    <span class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="cancel" data-toggle="tooltip" title="Cancel avatar">
-                                        <i class="ki ki-bold-close icon-xs text-muted"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <button id="edit_profile" type="submit" class="ml-1 btn btn-sm btn-primary">Change Profile</button>
-                                </div>
-                            </form>
+                                <div class="image-input" id="kt_image_4" style="background-image: url({{ ($user->image == NULL) ? asset("assets/media/users/blank.png") :  asset("files/profile_pics/".$user->image)}})">
+                                    <div class="image-input-wrapper"></div>
+                               </div>
                             </div>
                             <div class="pt-2">
                                 <a href="#" class="font-weight-bolder font-size-h5 text-dark-75 text-hover-primary">{{ $user->name }}</a>
-                                <div class="text-muted">{{  Str::ucfirst($user->role) }}</div>
+                                <div class="text-muted">{{  Str::ucfirst($user->role->title) }}</div>
                             </div>
                             <!--end::User-->
                             <!--begin::Contact-->
@@ -91,7 +62,7 @@
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <span class="font-weight-bold mr-2">Phone:</span>
-                                    <span class="text-muted">{{ empty($user->number) ? '-' : $user->number }}</span>
+                                    <span class="text-muted">{{ empty($user->phone) ? '-' : $user->phone }}</span>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between">
                                     <span class="font-weight-bold mr-2">Joined :</span>

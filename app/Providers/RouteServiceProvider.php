@@ -95,7 +95,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('admin')
             ->namespace($this->namespace)
-            ->middleware(['web','auth', 'admin'])
+            ->middleware(['web','auth', 'admin','profile-unlocked'])
             ->name('admin.')
             ->group(base_path('routes/admin.php'));
     }
@@ -109,14 +109,14 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('settings')
             ->namespace($this->namespace)
-            ->middleware(['web','auth'])
+            ->middleware(['web','auth','profile-unlocked'])
             ->name('settings.')
             ->group(base_path('routes/settings.php'));
     }
     protected function mapProjectRoutes(){
         Route::prefix('project')
             ->namespace($this->namespace)
-            ->middleware(['web','auth','has-permisson'])
+            ->middleware(['web','auth','has-permisson','profile-unlocked'])
             ->name('project.')
             ->group(base_path('routes/project.php'));
     }
@@ -130,7 +130,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('manager')
             ->namespace($this->namespace)
-            ->middleware(['web','auth', 'manager'])
+            ->middleware(['web','auth', 'manager','profile-unlocked'])
             ->name('manager.')
             ->group(base_path('routes/manager.php'));
     }
@@ -138,7 +138,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('employee')
             ->namespace($this->namespace)
-            ->middleware(['web','auth', 'employee'])
+            ->middleware(['web','auth', 'employee','profile-unlocked'])
             ->name('employee.')
             ->group(base_path('routes/employee.php'));
     }

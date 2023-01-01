@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Employee;
+namespace App\Http\Controllers\Project;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -14,10 +14,18 @@ class TaskBoardController extends Controller
 {
     public function index(Request $request){
         if($request->ajax()){
-            $tasks = ProjectSubtask::join('project_subtask_user_assign','project_subtask_user_assign.project_subtask_id','project_subtask.id')
+            if(Auth::user()->role_id == 1){
+                $tasks = ProjectSubtask::join('project_subtask_user_assign','project_subtask_user_assign.project_subtask_id','project_subtask.id')
+                                ->orderBy('project_subtask.order','asc')
+                                ->get(['project_subtask.id', 'project_subtask.complete','project_subtask.priority','project_subtask.due_date','project_subtask.title','project_subtask.description','project_subtask.status','project_subtask.project_id']);
+
+            }else{
+                $tasks = ProjectSubtask::join('project_subtask_user_assign','project_subtask_user_assign.project_subtask_id','project_subtask.id')
                                 ->where('project_subtask_user_assign.user_id', Auth::user()->id)
                                 ->orderBy('project_subtask.order','asc')
                                 ->get(['project_subtask.id', 'project_subtask.complete','project_subtask.priority','project_subtask.due_date','project_subtask.title','project_subtask.description','project_subtask.status','project_subtask.project_id']);
+            }
+
 
             $todo = ProjectHelp::taskformat($tasks, 'todo');
             $hold = ProjectHelp::taskformat($tasks, 'hold');

@@ -64,6 +64,13 @@ function viewTask(URL){
                     }
                     $("#task_priority").text(`Priority: `+ data.data.priority);
                     $("#due_date").text(`Due Date: `+ data.data.due_date.slice(0, 10));
+                    var members = 'Members :'
+                        data.assigned_member.forEach(function(value) {
+                             members =  members+`<span class="tool" data-tip="`+value+`">
+                                                   <i style="font-size: 25px;" class="far fa-user-circle"></i>
+                                                </span>`
+                        });
+                    $('.modal-footer').html(members);
                 }else{
                     toastr.error(data.msg);
                 }

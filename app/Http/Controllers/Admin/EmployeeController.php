@@ -26,14 +26,22 @@ class EmployeeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request , $stage=null)
     {
         if ($request->isMethod("GET")) {
+            if($stage == 'active'){
+                $title = "Active";
+                $users = User::where('role_id','!=',1)->where('stage',1)->get();
+            }else if($stage == "locked"){
+                $title = "Locked";
+                $users = User::where('role_id','!=',1)->where('stage',0)->get();
+            }else{
+                $title = "All";
+                $users = User::where('role_id','!=',1)->get();
+            }
             $roles = Role::all();
             $position = Position::all();
-            $users = User::where('role_id','!=',1)->get();
-            //dd($users);
-            return view('Admin\Empolyee\index', ['users' => $users , 'roles' =>$roles,'positions' =>$position]);
+            return view('Admin\Empolyee\index', ['users' => $users , 'roles' =>$roles,'positions' =>$position,'title'=>$title]);
         } else {
             return redirect('/');
         }

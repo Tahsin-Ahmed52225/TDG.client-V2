@@ -5,11 +5,10 @@
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Delete Data</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+            <span style="display:block !important;" aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body">
-           Are you sure you want to delete data?
+        <div class="modal-body" id="modalText">
         </div>
         <div class="modal-footer">
           <button id="sureDeleteBtn" type="submit" class="btn btn-primary">Yes, Sure</button>

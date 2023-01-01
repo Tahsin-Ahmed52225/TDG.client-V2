@@ -26,24 +26,27 @@
                             <div class="card-header">
                                 <div class="card-title">
                                     <span class="card-icon">
-                                        <i class="flaticon2-chat-1 text-primary"></i>
+                                        <i class="flaticon2-user-1 text-primary"></i>
                                     </span>
-                                    <h3 class="card-label">Total Employee
-                                    <small>sub title</small></h3>
+                                    <h3 class="card-label">Employees
                                 </div>
                                 <div class="card-toolbar">
-                                    <a href="#" class="btn btn-sm btn-icon btn-light-danger mr-2">
-                                        <i class="flaticon2-drop"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-icon btn-light-success mr-2">
-                                        <i class="flaticon2-gear"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-icon btn-light-primary">
-                                        <i class="flaticon2-bell-2"></i>
+                                    <a href="{{ route('admin.view_member') }}" class="btn btn-sm btn-icon btn-light-primary" data-toggle="tooltip" data-placement="top" title="View Employees">
+                                        <i class="flaticon2-paper-plane"></i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body"></div>
+                            <div class="card-body text-center">
+                               <a href="{{ route('admin.view_member') }}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="View All Employees">
+                                   Total: {{ $employees['total'] }}
+                               </a>
+                               <a href="{{ route('admin.view_member' ,'active') }}" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="View Active Employees">
+                                    Active : {{ $employees['active'] }}
+                                </a>
+                                <a href="{{ route('admin.view_member' ,'locked') }}" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="View Locked Employees">
+                                    Locked : {{ $employees['locked'] }}
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -53,22 +56,28 @@
                                     <span class="card-icon">
                                         <i class="flaticon2-chat-1 text-primary"></i>
                                     </span>
-                                    <h3 class="card-label">Total Projects
-                                    <small>sub title</small></h3>
+                                    <h3 class="card-label">Projects
                                 </div>
                                 <div class="card-toolbar">
-                                    <a href="#" class="btn btn-sm btn-icon btn-light-danger mr-2">
-                                        <i class="flaticon2-drop"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-icon btn-light-success mr-2">
-                                        <i class="flaticon2-gear"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-sm btn-icon btn-light-primary">
-                                        <i class="flaticon2-bell-2"></i>
+                                    <a href="{{ route("project.view") }}" class="btn btn-sm btn-icon btn-light-primary" data-toggle="tooltip" data-placement="top" title="View Projects">
+                                        <i class="flaticon2-paper-plane"></i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body"> </div>
+                            <div class="card-body text-center">
+                                    <a href="{{ route("project.view") }}" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="View All Projects">
+                                        Total: {{ $projects['total'] }}
+                                    </a>
+                                    <a href="{{ route("project.view",'running') }}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="View Running Projects">
+                                        Running : {{ $projects['running'] }}
+                                    </a>
+                                    <a href="{{ route("project.view",'stopped') }}" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="View On Hold Projects">
+                                        Hold : {{ $projects['hold'] }}
+                                    </a>
+                                    <a href="{{ route("project.view",'complete') }}" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="View Complete Projects">
+                                        Complete : {{ $projects['complete'] }}
+                                    </a>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -93,7 +102,9 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body"> </div>
+                            <div class="card-body">
+
+                            </div>
                         </div>
                     </div>
                 </div>

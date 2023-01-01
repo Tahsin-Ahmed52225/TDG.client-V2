@@ -36,7 +36,7 @@
     <!--begin::Header Mobile-->
     <div id="kt_header_mobile" class="header-mobile align-items-center header-mobile-fixed">
         <!--begin::Logo-->
-        <a href="index.html">
+        <a href="{{ route('manager.dashboard') }}">
             <img style="height: 125px; margin-top: 10px;" alt="Logo"
                 src="{{ asset('assets/media/logos/logo-light.png') }}" />
         </a>
@@ -85,7 +85,7 @@
                 <!--begin::Brand-->
                 <div class="brand flex-column-auto" id="kt_brand">
                     <!--begin::Logo-->
-                    <a href="index.html" class="brand-logo">
+                    <a href="{{ route('manager.dashboard') }}" class="brand-logo">
                         <img style="height:145px; margin-top:7px;" alt="Logo"
                             src="{{ asset('assets/media/logos/logo-light.png') }}" />
                     </a>
@@ -121,9 +121,9 @@
                         data-menu-dropdown-timeout="500">
                         <!--begin::Menu Nav-->
                         <ul class="menu-nav">
-                            <li class="menu-item {{ request()->routeIs('admin.dashboard') ? 'menu-item-active' : '' }} "
+                            <li class="menu-item {{ request()->routeIs('employee.dashboard') ? 'menu-item-active' : '' }} "
                                 aria-haspopup="true">
-                                <a href="/admin/dashboard" class="menu-link">
+                                <a href="{{ route('manager.dashboard') }}" class="menu-link">
                                     <span class="svg-icon menu-icon">
                                         <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Layers.svg-->
                                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -511,12 +511,6 @@
                                 <label class="col-8 col-form-label">Roles :</label>
                                 <div class="col-4 d-flex justify-content-end">
                                     <a href="{{ route("settings.roles") }}" class="btn btn-sm btn-primary">View</a>
-                                </div>
-                            </div>
-                            <div class="form-group mb-0 row align-items-center">
-                                <label class="col-8 col-form-label">Permisson :</label>
-                                <div class="col-4 d-flex justify-content-end">
-                                    <a href="{{ route("settings.permissons") }}" class="btn btn-sm btn-primary">View</a>
                                 </div>
                             </div>
                             <div class="form-group mb-0 row align-items-center">

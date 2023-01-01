@@ -112,7 +112,7 @@ class SystemController extends Controller
             })
             ->removeColumn('updated_at')
             ->addColumn('action', function(Log $value){
-                $btn ='<button data-id='.$value->id.' class="btn delete_btn" style="border:1px solid rgb(219, 219, 219); padding-right: .5rem;" data-toggle="modal" data-target="#delete_modal_ajax">'
+                $btn ='<button data-id='.$value->id.' class="btn delete_btn" style="border:1px solid rgb(219, 219, 219); padding-right: .5rem;">'
                         .'<i data-id='.$value->id.' class="fas fa-trash-alt text-danger"></i>'
                     .'</button>';
                     return $btn;

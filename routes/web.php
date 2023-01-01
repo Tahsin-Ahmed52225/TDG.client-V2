@@ -9,7 +9,7 @@ Route::match(['get', 'post'], '/login', 'Auth\LoginController@index')->name('log
 Route::match(['get', 'post'], '/forget_password', 'Auth\LoginController@forget_password')->middleware('guest')->name('forget_password');
 
 //Profile Controll
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'profile-unlocked'])->group(function () {
     #######Sorting Project Routes
 
 
