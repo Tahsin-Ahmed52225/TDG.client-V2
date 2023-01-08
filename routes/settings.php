@@ -15,3 +15,4 @@ Route::match(['get', 'post'], '/permissions/{id}','SystemController@permission')
 Route::get('/log', 'SystemController@log')->name("log");
 Route::post('/delete-log/{id}', 'SystemController@logDelete')->name("log_delete");
 Route::post('/delete-log-all', 'SystemController@logAllDelete')->name("log_delete_all");
+Route::post('/permission-toggle', 'SystemController@permissionToggle')->name("permission_toggle");

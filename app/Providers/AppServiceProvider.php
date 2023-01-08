@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
 
-            view()->composer('layouts.admin', function($view) {
+            view()->composer(['layouts.admin','layouts.app'], function($view) {
                 $view->with(['contents' => LogActivity::allLog()]);
             });
 

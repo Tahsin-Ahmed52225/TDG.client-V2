@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permisson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 use DataTables;
 
 # Custom Models
@@ -15,6 +14,12 @@ use App\Models\User;
 
 class SystemController extends Controller
 {
+    function __construct()
+    {
+         $this->middleware('permission:system-role', ['only' => ['role','roleDelete','roleShow','roleStore','roleEdit']]);
+         $this->middleware('permission:system-log', ['only' => ['log','logDelete','logAllDelete']]);
+    }
+
     public function role(Request $request){
         if($request->isMethod("GET")){
 
@@ -83,19 +88,12 @@ class SystemController extends Controller
     }
     public function permission(Request $request, $id){
         if($request->isMethod("GET")){
-            $routeCollection = Route::getRoutes();
-            $arr = [];
 
-            foreach ($routeCollection as $value) {
-                if (preg_match('/^\/?project/', $value->getName()) || preg_match('/^\/?settings/', $value->getName()) ) {
-                    $arr[] = $value->getName();
-                }
-            }
-            $filteredRoutes = array_unique($arr);
             //dd($filteredRoutes);
-            $role = Role::where('id',decrypt($id))->get('title');
-            $permisson = Permisson::where('role_id',decrypt($id));
-            return view("Settings.permisson",['permisson'=>$permisson , 'role'=> $role , 'filteredRoutes'=>$filteredRoutes]);
+            $role = Role::where('id',decrypt($id))->get();
+            $permisson =  DB::table('permissions')->get();
+
+            return view("Settings.permisson",['permisson'=>$permisson , 'role'=> $role ,]);
         }
     }
     public function log(Request $request){
@@ -144,6 +142,27 @@ class SystemController extends Controller
             return response()->json(['msg'=>'success']);
         }else{
             return response()->json(['msg'=>'error']);
+        }
+    }
+    public function permissionToggle(Request $request){
+        if($request->ajax()){
+
+            #use revoke and give permission here
+
+
+
+            // $rolePermisson = DB::table('role_has_permissions')->where('permission_id',$request->permission_id)->where('role_id',$request->role_id)->get();
+            // if(count($rolePermisson) != 0){
+            //     DB::table('role_has_permissions')->where('permission_id',$request->permission_id)->where('role_id',$request->role_id)->delete();
+            //     return response()->json(['msg'=>'Permission revoked']);
+            // }else{
+            //     DB::table('role_has_permissions')->insert([
+            //         'permission_id' => $request->permisson_id,
+            //         'role_id'=>$request->role_id,
+            //     ]);
+            //     return response()->json(['msg'=>'Permission given']);
+            // }
+
         }
     }
 }

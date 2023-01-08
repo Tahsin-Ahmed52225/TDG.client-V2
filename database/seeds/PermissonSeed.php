@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
 
 class PermissonSeed extends Seeder
 {
@@ -12,11 +13,27 @@ class PermissonSeed extends Seeder
      */
     public function run()
     {
-        $default_employee_permisson = ['CEO', 'Web Developer' , 'Graphices Designer' , 'Manager'];
-        foreach ($default_postions as $ele) {
-            DB::table('position')->insert([
-                'title' => $ele,
-            ]);
-        }
+        $permissions = [
+            'project-list',
+            'project-show',
+            'project-create',
+            'project-edit',
+            'project-delete',
+
+            'project-members-edit',
+            'project-files-edit',
+            'project-task-read',
+            'project-task-edit',
+            'taskboard-view',
+
+            'system-role',
+            'system-log',
+
+            'employee-manage',
+         ];
+
+         foreach ($permissions as $permission) {
+              Permission::create(['name' => $permission]);
+         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Helper\LogActivity;
 use App\Rules\PhoneNumber;
@@ -21,6 +21,10 @@ use App\Models\Position;
 
 class EmployeeController extends Controller
 {
+    function __construct()
+    {
+         $this->middleware('permission:employee-manage', ['only' => ['index','create','update','destroy','employeeLogin']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -101,29 +105,6 @@ class EmployeeController extends Controller
             return redirect('/');
         }
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *

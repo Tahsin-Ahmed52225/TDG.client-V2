@@ -36,7 +36,7 @@
     <!--begin::Header Mobile-->
     <div id="kt_header_mobile" class="header-mobile align-items-center header-mobile-fixed">
         <!--begin::Logo-->
-        <a href="{{ route('employee.dashboard') }}">
+        <a href="/">
             <img style="height: 125px; margin-top: 10px;" alt="Logo"
                 src="{{ asset('assets/media/logos/logo-light.png') }}" />
         </a>
@@ -85,7 +85,7 @@
                 <!--begin::Brand-->
                 <div class="brand flex-column-auto" id="kt_brand">
                     <!--begin::Logo-->
-                    <a href="{{ route('employee.dashboard') }}" class="brand-logo">
+                    <a href="/" class="brand-logo">
                         <img style="height:145px; margin-top:7px;" alt="Logo"
                             src="{{ asset('assets/media/logos/logo-light.png') }}" />
                     </a>
@@ -121,9 +121,9 @@
                         data-menu-dropdown-timeout="500">
                         <!--begin::Menu Nav-->
                         <ul class="menu-nav">
-                            <li class="menu-item {{ request()->routeIs('employee.dashboard') ? 'menu-item-active' : '' }} "
+                            <li class="menu-item {{ request()->routeIs('/'.Auth::user()->role->slug.'/dashboard') ? 'menu-item-active' : '' }} "
                                 aria-haspopup="true">
-                                <a href="{{ route('employee.dashboard') }}" class="menu-link">
+                                <a href="{{ '/'.Auth::user()->role->slug.'/dashboard' }}" class="menu-link">
                                     <span class="svg-icon menu-icon">
                                         <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Layers.svg-->
                                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -144,56 +144,60 @@
                                     <span class="menu-text">Dashboard</span>
                                 </a>
                             </li>
-                            <li class="menu-section">
-                                <h4 class="menu-text">Empolyee</h4>
-                                <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
-                            </li>
-                            <li
-                                class="menu-item {{ request()->routeIs('add_member') ? 'menu-item-active' : '' }}">
-                                <a href="{{ route('add_member') }}" class="menu-link">
-                                    <span class="svg-icon menu-icon">
-                                        <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-                                            viewBox="0 0 24 24" version="1.1">
-                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <rect x="0" y="0" width="24" height="24" />
-                                                <rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5" />
-                                                <path
-                                                    d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z"
-                                                    fill="#000000" opacity="0.3" />
-                                            </g>
-                                        </svg>
-                                        <!--end::Svg Icon-->
-                                    </span>
-                                    <span class="menu-text">Add Employee</span>
-                                </a>
-                            </li>
-                            <li
-                                class="menu-item {{ request()->routeIs('view_member') ? 'menu-item-active' : '' }}">
-                                <a href="{{ route('view_member') }}" class="menu-link">
-                                    <span class="svg-icon menu-icon">
-                                        <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
-                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                            xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-                                            viewBox="0 0 24 24" version="1.1">
-                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <rect x="0" y="0" width="24" height="24" />
-                                                <rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5" />
-                                                <path
-                                                    d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z"
-                                                    fill="#000000" opacity="0.3" />
-                                            </g>
-                                        </svg>
-                                        <!--end::Svg Icon-->
-                                    </span>
-                                    <span class="menu-text">View Employee</span>
-                                </a>
-                            </li>
+                            @if(Auth::user()->roles[0]->hasPermissionTo('employee-manage'))
+                                <li class="menu-section">
+                                    <h4 class="menu-text">Empolyee</h4>
+                                    <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
+                                </li>
+                                <li
+                                    class="menu-item {{ request()->routeIs('add_member') ? 'menu-item-active' : '' }}">
+                                    <a href="{{ route('add_member') }}" class="menu-link">
+                                        <span class="svg-icon menu-icon">
+                                            <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
+                                                viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect x="0" y="0" width="24" height="24" />
+                                                    <rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5" />
+                                                    <path
+                                                        d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z"
+                                                        fill="#000000" opacity="0.3" />
+                                                </g>
+                                            </svg>
+                                            <!--end::Svg Icon-->
+                                        </span>
+                                        <span class="menu-text">Add Employee</span>
+                                    </a>
+                                </li>
+                                <li
+                                    class="menu-item {{ request()->routeIs('view_member') ? 'menu-item-active' : '' }}">
+                                    <a href="{{ route('view_member') }}" class="menu-link">
+                                        <span class="svg-icon menu-icon">
+                                            <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
+                                                viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect x="0" y="0" width="24" height="24" />
+                                                    <rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5" />
+                                                    <path
+                                                        d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z"
+                                                        fill="#000000" opacity="0.3" />
+                                                </g>
+                                            </svg>
+                                            <!--end::Svg Icon-->
+                                        </span>
+                                        <span class="menu-text">View Employee</span>
+                                    </a>
+                                </li>
+                            @endif
+
                             <li class="menu-section">
                                 <h4 class="menu-text">Projects</h4>
                                 <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
                             </li>
+                            @if(Auth::user()->roles[0]->hasPermissionTo('project-create'))
                              <li
                                 class="menu-item {{ request()->routeIs('project.add') ? 'menu-item-active' : '' }}">
                                 <a href="{{ route('project.add') }}" class="menu-link">
@@ -215,6 +219,8 @@
                                     <span class="menu-text">Add Project</span>
                                 </a>
                             </li>
+                            @endif
+                            @if(Auth::user()->roles[0]->hasPermissionTo('project-list'))
                             <li
                                 class="menu-item {{ request()->routeIs('project.view') ? 'menu-item-active' : '' }}">
                                 <a href="{{ route('project.view') }}" class="menu-link">
@@ -236,6 +242,30 @@
                                     <span class="menu-text">View Projects</span>
                                 </a>
                             </li>
+                            @endif
+                            @if(Auth::user()->roles[0]->hasPermissionTo('taskboard-view'))
+                            <li
+                                class="menu-item {{ request()->routeIs('project.taskboard') ? 'menu-item-active' : '' }}">
+                                <a href="{{ route('project.taskboard') }}" class="menu-link">
+                                    <span class="svg-icon menu-icon">
+                                        <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
+                                            viewBox="0 0 24 24" version="1.1">
+                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                <rect x="0" y="0" width="24" height="24" />
+                                                <rect fill="#000000" x="4" y="4" width="7" height="7" rx="1.5" />
+                                                <path
+                                                    d="M5.5,13 L9.5,13 C10.3284271,13 11,13.6715729 11,14.5 L11,18.5 C11,19.3284271 10.3284271,20 9.5,20 L5.5,20 C4.67157288,20 4,19.3284271 4,18.5 L4,14.5 C4,13.6715729 4.67157288,13 5.5,13 Z M14.5,4 L18.5,4 C19.3284271,4 20,4.67157288 20,5.5 L20,9.5 C20,10.3284271 19.3284271,11 18.5,11 L14.5,11 C13.6715729,11 13,10.3284271 13,9.5 L13,5.5 C13,4.67157288 13.6715729,4 14.5,4 Z M14.5,13 L18.5,13 C19.3284271,13 20,13.6715729 20,14.5 L20,18.5 C20,19.3284271 19.3284271,20 18.5,20 L14.5,20 C13.6715729,20 13,19.3284271 13,18.5 L13,14.5 C13,13.6715729 13.6715729,13 14.5,13 Z"
+                                                    fill="#000000" opacity="0.3" />
+                                            </g>
+                                        </svg>
+                                        <!--end::Svg Icon-->
+                                    </span>
+                                    <span class="menu-text">View Taskboard</span>
+                                </a>
+                            </li>
+                            @endif
                         </ul>
                         <!--end::Menu Nav-->
                     </div>
@@ -481,9 +511,10 @@
                     <!--begin::Nav-->
                     <div class="navi navi-icon-circle navi-spacer-x-0">
                         <!--begin::Item-->
+                    @if(Auth::user()->roles[0]->hasPermissionTo('system-log'))
                         <div class="bg-white" style="position: sticky; top:0px; padding:10px">
                             <a href="{{ route('settings.log') }}" class="btn btn-sm btn-primary position-sticky" style="width: 100%">
-                                View Log
+                                View All Log
                            </a>
                         </div>
                         @foreach ($contents  as $ele)
@@ -497,6 +528,7 @@
                             </a>
                         @endforeach
                         <!--end::Item-->
+                    @endif
                     </div>
                     <!--end::Nav-->
                 </div>
@@ -507,12 +539,14 @@
                         <!--begin::Section-->
                         <div>
                             <h5 class="font-weight-bold mb-3">Stystem Role & Permissons</h5>
+                            @if(Auth::user()->roles[0]->hasPermissionTo('system-role'))
                             <div class="form-group mb-0 row align-items-center">
                                 <label class="col-8 col-form-label">Roles :</label>
                                 <div class="col-4 d-flex justify-content-end">
                                     <a href="{{ route("settings.roles") }}" class="btn btn-sm btn-primary">View</a>
                                 </div>
                             </div>
+                            @endif
                             <div class="form-group mb-0 row align-items-center">
                                 <label class="col-8 col-form-label">Support Portal:</label>
                                 <div class="col-4 d-flex justify-content-end">

@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskBoardController extends Controller
 {
+    function __construct()
+    {
+         $this->middleware('permission:taskboard-view', ['only' => ['index','changeStatus']]);
+    }
     public function index(Request $request){
         if($request->ajax()){
             if(Auth::user()->role_id == 1){

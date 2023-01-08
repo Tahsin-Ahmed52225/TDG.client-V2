@@ -53,6 +53,9 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
+        'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
         'profile-unlocked' => \App\Http\Middleware\ProfileLockedMiddleware::class,
         'has-permisson' => \App\Http\Middleware\HasPermissonMiddleware::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,

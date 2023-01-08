@@ -17,6 +17,13 @@ use App\Models\ProjectSubtaskAssigns;
 
 class SingleProjectController extends Controller
 {
+    function __construct()
+    {
+         $this->middleware('permission:project-members-edit', ['only' => ['removeMember','removeManager','assignManager','getProjectAssignDetails']]);
+         $this->middleware('permission:project-files-edit', ['only' => ['addFile','editFile','deleteFile']]);
+         $this->middleware('permission:project-task-read', ['only' => ['getSubtask','taskCompleteToggle']]);
+         $this->middleware('permission:project-task-edit', ['only' => ['createSubtask','updateSubtask','deleteSubtask']]);
+    }
 
     public function getProjectAssignDetails(Request $request){
         if($request->ajax()){

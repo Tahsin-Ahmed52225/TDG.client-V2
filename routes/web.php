@@ -12,7 +12,6 @@ Route::match(['get', 'post'], '/forget_password', 'Auth\LoginController@forget_p
 Route::middleware(['auth', 'profile-unlocked'])->group(function () {
     #######Sorting Project Routes
 
-
     ######Profile Routes
     Route::get('/my-profile', 'ProfileController@index')->name("my_profile");
     Route::match(['get', 'post'], '/edit-profile', 'ProfileController@edit')->name('edit_profile');
@@ -23,4 +22,14 @@ Route::middleware(['auth', 'profile-unlocked'])->group(function () {
     ######Logout Route
     Route::get('/logout', 'Auth\LoginController@logout')->name("logout");
 });
+
+Route::middleware(['auth','web','has-permisson','profile-unlocked'])->group(function () {
+    // Employee Controll
+        Route::match(['get', 'post'], '/view-member/{stage?}', 'EmployeeController@index')->name('view_member');
+        Route::match(['get', 'post'], '/add-member', 'EmployeeController@create')->name('add_member');
+        Route::get('/delete-member', 'EmployeeController@destroy')->name("deleteMember");
+        Route::get('/update-member', 'EmployeeController@update')->name("updateMember");
+        Route::post('/employee-login', 'EmployeeController@employeeLogin')->name("employee_login");
+});
+
 

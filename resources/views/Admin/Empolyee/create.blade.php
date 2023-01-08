@@ -23,7 +23,7 @@
                     @if (Session::has('alert-' . $msg))
                         @if ($msg == 'success')
                             <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a
-                                    style="color:white;" href="{{ route('admin.view_member') }}"> <u>View Member</u> </a>
+                                    style="color:white;" href="{{ route('view_member') }}"> <u>View Member</u> </a>
                                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                             </p>
                         @else
@@ -39,12 +39,12 @@
                                 <h3 class="card-title ">
                                     Create Member Account
                                 </h3>
-                                <a href="{{ route('admin.view_member') }}"> <button class="btn btn-sm btn-info">View All
+                                <a href="{{ route('view_member') }}"> <button class="btn btn-sm btn-info">View All
                                         Member</button>
                                 </a>
                             </div>
                             <!--begin::Form-->
-                            <form method="POST" action={{ route('admin.add_member') }}>
+                            <form method="POST" action={{ route('add_member') }}>
                                 @csrf
                                 <div class="card-body">
                                     <div class="form-row">

@@ -123,7 +123,7 @@
                         <ul class="menu-nav">
                             <li class="menu-item {{ request()->routeIs('admin.dashboard') ? 'menu-item-active' : '' }} "
                                 aria-haspopup="true">
-                                <a href="/admin/dashboard" class="menu-link">
+                                <a href={{ '/'.Auth::user()->role->slug.'/dashboard' }} class="menu-link">
                                     <span class="svg-icon menu-icon">
                                         <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Layers.svg-->
                                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -149,8 +149,8 @@
                                 <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
                             </li>
                             <li
-                                class="menu-item {{ request()->routeIs('admin.add_member') ? 'menu-item-active' : '' }}">
-                                <a href="{{ route('admin.add_member') }}" class="menu-link">
+                                class="menu-item {{ request()->routeIs('add_member') ? 'menu-item-active' : '' }}">
+                                <a href="{{ route('add_member') }}" class="menu-link">
                                     <span class="svg-icon menu-icon">
                                         <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
                                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -170,8 +170,8 @@
                                 </a>
                             </li>
                             <li
-                                class="menu-item {{ request()->routeIs('admin.view_member') ? 'menu-item-active' : '' }}">
-                                <a href="{{ route('admin.view_member') }}" class="menu-link">
+                                class="menu-item {{ request()->routeIs('view_member') ? 'menu-item-active' : '' }}">
+                                <a href="{{ route('view_member') }}" class="menu-link">
                                     <span class="svg-icon menu-icon">
                                         <!--begin::Svg Icon | path:assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
                                         <svg xmlns="http://www.w3.org/2000/svg"

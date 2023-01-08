@@ -18,7 +18,12 @@ class LoginController extends Controller
      */
     public function index(Request $request){
         if ($request->isMethod("GET")) {
-            return  view("Guest.login");
+            if (Auth::check()) {
+                return redirect(Auth::user()->role->slug.'/dashboard');
+            }else{
+                return  view("Guest.login");
+            }
+
         } else if ($request->isMethod("POST")) {
             $data['email'] = $request->email;
             $data['password'] = $request->password;

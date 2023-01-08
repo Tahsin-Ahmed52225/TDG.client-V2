@@ -17,8 +17,25 @@ use App\Models\ProjectSubtask;
 use App\Models\ProjectSubtaskAssigns;
 use App\Models\User;
 
+# Project Permissons Setup
+
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+
 class ProjectController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    function __construct()
+    {
+         $this->middleware('permission:project-list|project-show|project-create|project-edit|project-delete', ['only' => ['index','show']]);
+         $this->middleware('permission:project-create', ['only' => ['create','store']]);
+         $this->middleware('permission:project-edit', ['only' => ['edit','update','updateTitle','updateDescription','']]);
+         $this->middleware('permission:project-delete', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *

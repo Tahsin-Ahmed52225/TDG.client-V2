@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 @section('links')
     <!--begin::Page Vendors Styles(used by this page)-->
     <link href="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.css') }}" rel="stylesheet"
@@ -31,19 +31,19 @@
                                     <h3 class="card-label">Employees
                                 </div>
                                 <div class="card-toolbar">
-                                    <a href="{{ route('admin.view_member') }}" class="btn btn-sm btn-icon btn-light-primary" data-toggle="tooltip" data-placement="top" title="View Employees">
+                                    <a href="{{ route('view_member') }}" class="btn btn-sm btn-icon btn-light-primary" data-toggle="tooltip" data-placement="top" title="View Employees">
                                         <i class="flaticon2-paper-plane"></i>
                                     </a>
                                 </div>
                             </div>
                             <div class="card-body text-center">
-                               <a href="{{ route('admin.view_member') }}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="View All Employees">
+                               <a href="{{ route('view_member') }}" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="View All Employees">
                                    Total: {{ $employees['total'] }}
                                </a>
-                               <a href="{{ route('admin.view_member' ,'active') }}" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="View Active Employees">
+                               <a href="{{ route('view_member' ,'active') }}" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="View Active Employees">
                                     Active : {{ $employees['active'] }}
                                 </a>
-                                <a href="{{ route('admin.view_member' ,'locked') }}" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="View Locked Employees">
+                                <a href="{{ route('view_member' ,'locked') }}" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top" title="View Locked Employees">
                                     Locked : {{ $employees['locked'] }}
                                 </a>
                             </div>

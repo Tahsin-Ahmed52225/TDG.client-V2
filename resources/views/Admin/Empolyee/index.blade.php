@@ -145,7 +145,7 @@
                     headers: {
                             'X-CSRF-TOKEN': "{{csrf_token()}}",
                         },
-                    url: `{{ route('admin.employee_login') }}`,
+                    url: `{{ route('employee_login') }}`,
                     type: "POST",
                     data: { user_id: employee_id },
                     success: function (data) {
